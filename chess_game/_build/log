@@ -1,0 +1,7 @@
+# dune init project chess_game
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /Users/matthewli/.cache/dune/db
+# Workspace root: "/Users/matthewli/Desktop/CS
+# 3110/CS3110-Final_Project/chess_game"
+# Auto-detected concurrency: 8

@@ -1,0 +1,4 @@
+(executable
+ (public_name chess_game)
+ (name main)
+ (libraries chess_game))
