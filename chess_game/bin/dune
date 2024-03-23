@@ -1,4 +1,4 @@
 (executable
  (public_name chess_game)
  (name main)
- (libraries chess_game))
+ (libraries chess_game lablgtk2))
