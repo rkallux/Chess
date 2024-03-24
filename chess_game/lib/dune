@@ -1,2 +1,3 @@
 (library
- (name chess_game))
+ (name chess_game)
+ (libraries lablgtk2))

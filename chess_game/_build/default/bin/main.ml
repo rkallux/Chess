@@ -7,7 +7,6 @@ let main () =
   let window =
     GWindow.window ~width:320 ~height:240 ~title:"Simple lablgtk program" ()
   in
-
   let vbox = GPack.vbox ~packing:window#add () in
   ignore (window#connect#destroy ~callback:Main.quit);
 
@@ -26,4 +25,3 @@ let main () =
   Main.main ()
 
 let () = main ()
-

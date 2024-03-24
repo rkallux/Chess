@@ -1,9 +1,10 @@
-# dune exec bin/main.exe
+# dune build
 # OCAMLPARAM: unset
 # Shared cache: disabled
-# Shared cache location: /Users/jay/.cache/dune/db
-# Workspace root: /Users/jay/3110/FinalProject/CS3110-Final_Project/chess_game
-# Auto-detected concurrency: 12
+# Shared cache location: /Users/alexanderhe/.cache/dune/db
+# Workspace root: "/Users/alexanderhe/Downloads/CS
+# 3110/CS3110-Final_Project/chess_game"
+# Auto-detected concurrency: 8
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -14,10 +15,10 @@
 #  ; installed_env =
 #      map
 #        { "INSIDE_DUNE" :
-#            "/Users/jay/3110/FinalProject/CS3110-Final_Project/chess_game/_build/default"
+#            "/Users/alexanderhe/Downloads/CS 3110/CS3110-Final_Project/chess_game/_build/default"
 #        ; "OCAML_COLOR" : "always"
 #        ; "OPAMCOLOR" : "always"
 #        }
 #  ; instrument_with = []
 #  }
-$ /Users/jay/.opam/cs3110-2024sp/bin/ocamlc.opt -config > /var/folders/b8/j4p16jg956q2grg4ry9bypj80000gn/T/dune_10bb16_output
+$ /Users/alexanderhe/.opam/cs3110-2024sp/bin/ocamlc.opt -config > /var/folders/pc/3p81_lb14r90pkgv0v8840qc0000gq/T/dune_4b9333_output
