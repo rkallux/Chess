@@ -1,8 +1,0 @@
-lib: [
-  "_build/install/default/lib/chess_game/META"
-  "_build/install/default/lib/chess_game/dune-package"
-  "_build/install/default/lib/chess_game/opam"
-]
-bin: [
-  "_build/install/default/bin/chess_game"
-]

@@ -3,18 +3,18 @@ open GMain
 
 let piece_square (row : int) (col : int) =
   match (row, col) with
-  | 1, _ -> "W_Pawn"
-  | 0, 0 | 0, 7 -> "W_Rook"
-  | 0, 1 | 0, 6 -> "W_Knight"
-  | 0, 2 | 0, 5 -> "W_Bishop"
-  | 0, 3 -> "W_Queen"
-  | 0, 4 -> "W_King"
-  | 6, _ -> "B_Pawn"
-  | 7, 0 | 7, 7 -> "B_Rook"
-  | 7, 1 | 7, 6 -> "B_Knight"
-  | 7, 2 | 7, 5 -> "B_Bishop"
-  | 7, 3 -> "B_Queen"
-  | 7, 4 -> "B_King"
+  | 1, _ -> "B_Pawn"
+  | 0, 0 | 0, 7 -> "B_Rook"
+  | 0, 1 | 0, 6 -> "B_Knight"
+  | 0, 2 | 0, 5 -> "B_Bishop"
+  | 0, 3 -> "B_Queen"
+  | 0, 4 -> "B_King"
+  | 6, _ -> "W_Pawn"
+  | 7, 0 | 7, 7 -> "W_Rook"
+  | 7, 1 | 7, 6 -> "W_Knight"
+  | 7, 2 | 7, 5 -> "W_Bishop"
+  | 7, 3 -> "W_Queen"
+  | 7, 4 -> "W_King"
   | _ -> ""
 
 let set_square_img row col =
