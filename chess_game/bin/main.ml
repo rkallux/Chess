@@ -1,5 +1,12 @@
 open GMain
-(* open GdkKeysyms *)
+
+(** Initialize GTK library. *)
+let locale = GtkMain.Main.init ()
+
+(** Static variables for the GUI Window width and height. *)
+let width = 600
+
+let height = 600
 
 let piece_square (row : int) (col : int) =
   match (row, col) with
@@ -18,16 +25,14 @@ let piece_square (row : int) (col : int) =
   | _ -> ""
 
 let set_square_img row col =
-  let pixbuf =
-    GdkPixbuf.from_file ("assets/" ^ piece_square row col ^ ".png")
-  in
   let dim = 65 in
-  let pixbuf' = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
-  GdkPixbuf.scale ~dest:pixbuf' ~width:dim ~height:dim pixbuf;
-  pixbuf'
+  let img = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
+  GdkPixbuf.scale ~dest:img ~width:dim ~height:dim
+    (GdkPixbuf.from_file ("assets/" ^ piece_square row col ^ ".png"));
+  img
 
 let create_chessboard_window () =
-  let window = GWindow.window ~width:600 ~height:600 ~title:"Board" () in
+  let window = GWindow.window ~width ~height ~title:"Board" () in
   ignore (window#connect#destroy ~callback:Main.quit);
 
   (* Vertical box for the Quit button + chessboard *)
@@ -46,8 +51,9 @@ let create_chessboard_window () =
   let create_square row col =
     let button = GButton.button ~label:"" () in
     if piece_square row col != "" then
-      GMisc.image ~pixbuf:(set_square_img row col) ~packing:button#set_image ()
-      |> ignore;
+      ignore
+        (GMisc.image ~pixbuf:(set_square_img row col) ~packing:button#set_image
+           ());
     let color =
       if (row + col) mod 2 = 0 then `NAME "white" else `NAME "green"
     in
@@ -69,9 +75,31 @@ let create_chessboard_window () =
   window#show ();
   ()
 
+let create_homescreen_window () =
+  let window = GWindow.window ~width ~height ~title:"Home Screen" () in
+  ignore (window#connect#destroy ~callback:Main.quit);
+
+  let vbox = GPack.vbox ~packing:window#add () in
+
+  let two_player_button = GButton.button ~packing:vbox#pack () in
+  two_player_button#misc#set_size_request ~width:100 ~height:100 ();
+  two_player_button#misc#modify_bg [ (`NORMAL, `NAME "gray") ];
+  two_player_button#set_border_width 10;
+  ignore
+    (let lbl = GMisc.label ~packing:two_player_button#set_image () in
+     lbl#set_text "Two Player";
+     lbl#set_justify `CENTER);
+  ignore
+    (two_player_button#connect#clicked ~callback:(fun () ->
+         window#destroy ();
+         create_chessboard_window ();
+         Main.main ()));
+
+  window#show ();
+  ()
+
 let main () =
-  let _ = GtkMain.Main.init () in
-  create_chessboard_window ();
+  create_homescreen_window ();
   Main.main ()
 
 let () = main ()
