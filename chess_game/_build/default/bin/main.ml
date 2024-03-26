@@ -1,6 +1,31 @@
 open GMain
 (* open GdkKeysyms *)
 
+let piece_square (row : int) (col : int) =
+  match (row, col) with
+  | 1, _ -> "W_Pawn"
+  | 0, 0 | 0, 7 -> "W_Rook"
+  | 0, 1 | 0, 6 -> "W_Knight"
+  | 0, 2 | 0, 5 -> "W_Bishop"
+  | 0, 3 -> "W_Queen"
+  | 0, 4 -> "W_King"
+  | 6, _ -> "B_Pawn"
+  | 7, 0 | 7, 7 -> "B_Rook"
+  | 7, 1 | 7, 6 -> "B_Knight"
+  | 7, 2 | 7, 5 -> "B_Bishop"
+  | 7, 3 -> "B_Queen"
+  | 7, 4 -> "B_King"
+  | _ -> ""
+
+let set_square_img row col =
+  let pixbuf =
+    GdkPixbuf.from_file ("assets/" ^ piece_square row col ^ ".png")
+  in
+  let dim = 65 in
+  let pixbuf' = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
+  GdkPixbuf.scale ~dest:pixbuf' ~width:dim ~height:dim pixbuf;
+  pixbuf'
+
 let create_chessboard_window () =
   let window = GWindow.window ~width:600 ~height:600 ~title:"Board" () in
   ignore (window#connect#destroy ~callback:Main.quit);
@@ -20,8 +45,11 @@ let create_chessboard_window () =
   (* Function to create a square *)
   let create_square row col =
     let button = GButton.button ~label:"" () in
+    if piece_square row col != "" then
+      GMisc.image ~pixbuf:(set_square_img row col) ~packing:button#set_image ()
+      |> ignore;
     let color =
-      if (row + col) mod 2 = 0 then `NAME "white" else `NAME "black"
+      if (row + col) mod 2 = 0 then `NAME "white" else `NAME "green"
     in
     button#misc#modify_bg [ (`NORMAL, color) ];
     ignore (* for now, clicking a square just prints its coordinates *)
