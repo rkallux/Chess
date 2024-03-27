@@ -8,6 +8,8 @@ let width = 600
 
 let height = 600
 
+(**[piece_square r c] is the type of piece at row [r] and column [c] at the
+   beginning of the game*)
 let piece_square (row : int) (col : int) =
   match (row, col) with
   | 1, _ -> "B_Pawn"
@@ -24,6 +26,8 @@ let piece_square (row : int) (col : int) =
   | 7, 4 -> "W_King"
   | _ -> ""
 
+(**[set_square_img r c] generates the image to be shown at row [r] and column
+   [c] as specified by [piece_square]*)
 let set_square_img row col =
   let dim = 65 in
   let img = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
@@ -31,6 +35,7 @@ let set_square_img row col =
     (GdkPixbuf.from_file ("assets/" ^ piece_square row col ^ ".png"));
   img
 
+(**[create_chessboard_window] creates a window with a standard chess board setup*)
 let create_chessboard_window () =
   let window = GWindow.window ~width ~height ~title:"Board" () in
   ignore (window#connect#destroy ~callback:Main.quit);
@@ -75,6 +80,7 @@ let create_chessboard_window () =
   window#show ();
   ()
 
+(**[create_homescreen_window] creates the inital wondow for game mode selection*)
 let create_homescreen_window () =
   let window = GWindow.window ~width ~height ~title:"Home Screen" () in
   ignore (window#connect#destroy ~callback:Main.quit);
