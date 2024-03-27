@@ -114,11 +114,11 @@ let create_chessboard_window () =
     button#misc#modify_bg [ (`NORMAL, color) ];
     ignore
       (button#connect#clicked ~callback:(fun () ->
-           ignore
-             (GMisc.image
-                ~pixbuf:(set_square_img prev.row prev.col)
-                ~packing:button#set_image ());
            if piece_square prev.row prev.col <> "" then (
+             ignore
+               (GMisc.image
+                  ~pixbuf:(set_square_img prev.row prev.col)
+                  ~packing:button#set_image ());
              state.(row).(col) <- state.(prev.row).(prev.col);
              state.(prev.row).(prev.col) <- None)
            else (
