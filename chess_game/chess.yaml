@@ -1,0 +1,25 @@
+---
+group:
+  - name: Alexander He
+    netid: adh236
+  - name: Matthew Li
+    netid: mcl244
+  - name: Jay Talwar
+    netid: jt878
+  - name: Joshua Rajendran
+  netid: jr2322
+  - name: Rohan Kalluraya
+  netid: rak298
+pm:
+  name: Joel Valerio
+  netid: jev66
+# Set to false if you don't want your gallery entry to be public.
+publish: true
+title: "Chess Game"
+# OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
+git-repo: "https://github.coecis.cornell.edu/adh236/CS3110-Final_Project/blob/main/README.md"
+demo-video-url: ""
+desc: >
+  Our project is the classical game of chess. It allows you to play chess
+  against a friend or against a computer. The interface uses mouse I/O to
+  allow you to drag and drop pieces to move them.
