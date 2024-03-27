@@ -62,6 +62,7 @@ type f = {
 }
 
 let prev = { row = 4; col = 4 }
+let update_square row col = failwith "error"
 
 (**[piece_square r c] is the type of piece at row [r] and column [c] at the
    beginning of the game*)
@@ -111,16 +112,18 @@ let create_chessboard_window () =
       if (row + col) mod 2 = 0 then `NAME "white" else `NAME "green"
     in
     button#misc#modify_bg [ (`NORMAL, color) ];
-    ignore (* for now, clicking a square just prints its coordinates *)
+    ignore
       (button#connect#clicked ~callback:(fun () ->
-           if piece_square prev.row prev.col <> "" then
-             ignore
-               (GMisc.image
-                  ~pixbuf:(set_square_img prev.row prev.col)
-                  ~packing:button#set_image ());
-
-           prev.row <- row;
-           prev.col <- col));
+           ignore
+             (GMisc.image
+                ~pixbuf:(set_square_img prev.row prev.col)
+                ~packing:button#set_image ());
+           if piece_square prev.row prev.col <> "" then (
+             state.(row).(col) <- state.(prev.row).(prev.col);
+             state.(prev.row).(prev.col) <- None)
+           else (
+             prev.row <- row;
+             prev.col <- col)));
 
     button
   in
