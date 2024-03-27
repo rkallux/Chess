@@ -1,30 +1,79 @@
 open GMain
 
 (** Initialize GTK library. *)
-let locale = GtkMain.Main.init ()
+let _ = GtkMain.Main.init ()
 
 (** Static variables for the GUI Window width and height. *)
 let width = 600
 
 let height = 600
 
+let state =
+  [|
+    [|
+      Some "B_Rook";
+      Some "B_Knight";
+      Some "B_Bishop";
+      Some "B_Queen";
+      Some "B_King";
+      Some "B_Bishop";
+      Some "B_Knight";
+      Some "B_Rook";
+    |];
+    [|
+      Some "B_Pawn";
+      Some "B_Pawn";
+      Some "B_Pawn";
+      Some "B_Pawn";
+      Some "B_Pawn";
+      Some "B_Pawn";
+      Some "B_Pawn";
+      Some "B_Pawn";
+    |];
+    [| None; None; None; None; None; None; None; None |];
+    [| None; None; None; None; None; None; None; None |];
+    [| None; None; None; None; None; None; None; None |];
+    [| None; None; None; None; None; None; None; None |];
+    [|
+      Some "W_Pawn";
+      Some "W_Pawn";
+      Some "W_Pawn";
+      Some "W_Pawn";
+      Some "W_Pawn";
+      Some "W_Pawn";
+      Some "W_Pawn";
+      Some "W_Pawn";
+    |];
+    [|
+      Some "W_Rook";
+      Some "W_Knight";
+      Some "W_Bishop";
+      Some "W_Queen";
+      Some "W_King";
+      Some "W_Bishop";
+      Some "W_Knight";
+      Some "W_Rook";
+    |];
+  |]
+
+type f = {
+  mutable row : int;
+  mutable col : int;
+}
+
+let prev = { row = 4; col = 4 }
+
 (**[piece_square r c] is the type of piece at row [r] and column [c] at the
    beginning of the game*)
 let piece_square (row : int) (col : int) =
-  match (row, col) with
-  | 1, _ -> "B_Pawn"
-  | 0, 0 | 0, 7 -> "B_Rook"
-  | 0, 1 | 0, 6 -> "B_Knight"
-  | 0, 2 | 0, 5 -> "B_Bishop"
-  | 0, 3 -> "B_Queen"
-  | 0, 4 -> "B_King"
-  | 6, _ -> "W_Pawn"
-  | 7, 0 | 7, 7 -> "W_Rook"
-  | 7, 1 | 7, 6 -> "W_Knight"
-  | 7, 2 | 7, 5 -> "W_Bishop"
-  | 7, 3 -> "W_Queen"
-  | 7, 4 -> "W_King"
-  | _ -> ""
+  match state.(row).(col) with
+  | Some piece -> piece
+  | None -> ""
+(* match (row, col) with | 1, _ -> "B_Pawn" | 0, 0 | 0, 7 -> "B_Rook" | 0, 1 |
+   0, 6 -> "B_Knight" | 0, 2 | 0, 5 -> "B_Bishop" | 0, 3 -> "B_Queen" | 0, 4 ->
+   "B_King" | 6, _ -> "W_Pawn" | 7, 0 | 7, 7 -> "W_Rook" | 7, 1 | 7, 6 ->
+   "W_Knight" | 7, 2 | 7, 5 -> "W_Bishop" | 7, 3 -> "W_Queen" | 7, 4 -> "W_King"
+   | _ -> "" *)
 
 (**[set_square_img r c] generates the image to be shown at row [r] and column
    [c] as specified by [piece_square]*)
@@ -51,7 +100,6 @@ let create_chessboard_window () =
   let table =
     GPack.table ~rows:8 ~columns:8 ~homogeneous:true ~packing:vbox#add ()
   in
-
   (* Function to create a square *)
   let create_square row col =
     let button = GButton.button ~label:"" () in
@@ -65,11 +113,17 @@ let create_chessboard_window () =
     button#misc#modify_bg [ (`NORMAL, color) ];
     ignore (* for now, clicking a square just prints its coordinates *)
       (button#connect#clicked ~callback:(fun () ->
-           Printf.printf "Square clicked: %d, %d\n" row col;
-           flush stdout));
+           if piece_square prev.row prev.col <> "" then
+             ignore
+               (GMisc.image
+                  ~pixbuf:(set_square_img prev.row prev.col)
+                  ~packing:button#set_image ());
+
+           prev.row <- row;
+           prev.col <- col));
+
     button
   in
-
   for row = 0 to 7 do
     for col = 0 to 7 do
       let square = create_square row col in
