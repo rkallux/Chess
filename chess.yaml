@@ -22,4 +22,4 @@ demo-video-url: ""
 desc: >
   Our project is the classical game of chess. It allows you to play chess
   against a friend or against a computer. The interface uses mouse I/O to
-  allow you to drag and drop pieces to move them.
+  allow you to click on a piece and a square to move the piece to.

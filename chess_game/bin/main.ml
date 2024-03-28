@@ -62,7 +62,6 @@ type f = {
 }
 
 let prev = { row = 4; col = 4 }
-let update_square row col = failwith "error"
 
 (**[piece_square r c] is the type of piece at row [r] and column [c] at the
    beginning of the game*)
