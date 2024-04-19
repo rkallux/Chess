@@ -56,6 +56,8 @@ let state =
     |];
   |]
 
+let buttons = Array.make_matrix 8 8 (GButton.button ~label:"" ())
+
 type f = {
   mutable row : int;
   mutable col : int;
@@ -69,11 +71,6 @@ let piece_square (row : int) (col : int) =
   match state.(row).(col) with
   | Some piece -> piece
   | None -> ""
-(* match (row, col) with | 1, _ -> "B_Pawn" | 0, 0 | 0, 7 -> "B_Rook" | 0, 1 |
-   0, 6 -> "B_Knight" | 0, 2 | 0, 5 -> "B_Bishop" | 0, 3 -> "B_Queen" | 0, 4 ->
-   "B_King" | 6, _ -> "W_Pawn" | 7, 0 | 7, 7 -> "W_Rook" | 7, 1 | 7, 6 ->
-   "W_Knight" | 7, 2 | 7, 5 -> "W_Bishop" | 7, 3 -> "W_Queen" | 7, 4 -> "W_King"
-   | _ -> "" *)
 
 (**[set_square_img r c] generates the image to be shown at row [r] and column
    [c] as specified by [piece_square]*)
@@ -118,6 +115,8 @@ let create_chessboard_window () =
                (GMisc.image
                   ~pixbuf:(set_square_img prev.row prev.col)
                   ~packing:button#set_image ());
+             ignore
+               (GMisc.image ~packing:buttons.(prev.row).(prev.col)#set_image ());
              state.(row).(col) <- state.(prev.row).(prev.col);
              state.(prev.row).(prev.col) <- None)
            else (
@@ -129,7 +128,8 @@ let create_chessboard_window () =
   for row = 0 to 7 do
     for col = 0 to 7 do
       let square = create_square row col in
-      table#attach ~left:col ~top:row ~expand:`BOTH ~fill:`BOTH square#coerce
+      table#attach ~left:col ~top:row ~expand:`BOTH ~fill:`BOTH square#coerce;
+      buttons.(row).(col) <- square
     done
   done;
 
