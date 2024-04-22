@@ -1,4 +1,5 @@
 open GMain
+open Chess_game
 
 (** Initialize GTK library. *)
 let _ = GtkMain.Main.init ()
@@ -110,13 +111,22 @@ let create_chessboard_window () =
     button#misc#modify_bg [ (`NORMAL, color) ];
     ignore
       (button#connect#clicked ~callback:(fun () ->
-           if piece_square prev.row prev.col <> "" then (
+           (* If prev square is a piece *)
+           if
+             piece_square prev.row prev.col <> ""
+             && Chess_game.Movement.is_valid_move
+                  (piece_square prev.row prev.col)
+                  prev.row prev.col row col state
+           then (
+             (* Then set new piece at new square *)
              ignore
                (GMisc.image
                   ~pixbuf:(set_square_img prev.row prev.col)
                   ~packing:button#set_image ());
+             (* Change prev piece to blank *)
              ignore
                (GMisc.image ~packing:buttons.(prev.row).(prev.col)#set_image ());
+             (* move prev piece to new location *)
              state.(row).(col) <- state.(prev.row).(prev.col);
              state.(prev.row).(prev.col) <- None)
            else (
