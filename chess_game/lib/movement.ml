@@ -103,21 +103,67 @@ let is_valid_pawn_move piece start_row start_col end_row end_col state =
       (* TODO: should check that end square is an opposing color *)
   | _ -> false
 
+(**[same_color piece end_row end_col state] is true if the piece at the position
+   of ([end_row], [end_column] in state has the same color as [piece] and false
+   otherwise)*)
+let same_color piece end_row end_col state =
+  let end_piece =
+    match state.(end_row).(end_col) with
+    | Some p -> p
+    | None -> "n"
+  in
+  if piece.[0] = end_piece.[0] then true else false
+
+(**[turn] contains the color of the player to move. ['W'] means white to move
+   and ['B'] means black to move.*)
+let turn = ref 'W'
+
+(**[update_turn ()] allows the next player to move.*)
+let update_turn () =
+  match !turn with
+  | 'W' -> turn := 'B'
+  | 'B' -> turn := 'W'
+  | _ -> failwith ""
+
 (** [is_valid_move piece start_row start_col end_row end_col state] checks if a
     move from [start_row, start_col] to [end_row, end_col] is valid based on the
     type of [piece] and the current [state] of the board. *)
 let is_valid_move piece start_row start_col end_row end_col state =
-  match piece with
-  | "B_Bishop" | "W_Bishop" ->
-      is_valid_bishop_move start_row start_col end_row end_col state
-  | "B_Rook" | "W_Rook" ->
-      is_valid_rook_move start_row start_col end_row end_col state
-  | "B_Knight" | "W_Knight" ->
-      is_valid_knight_move start_row start_col end_row end_col
-  | "B_Queen" | "W_Queen" ->
-      is_valid_queen_move start_row start_col end_row end_col state
-  | "B_King" | "W_King" ->
-      is_valid_king_move start_row start_col end_row end_col
-  | "B_Pawn" | "W_Pawn" ->
-      is_valid_pawn_move piece start_row start_col end_row end_col state
-  | _ -> false
+  (*only a valid move if the correct player is moving a piece and is not landing
+    on a square occupied by one of that player's pieces*)
+  if piece.[0] <> !turn || same_color piece end_row end_col state then false
+  else
+    match piece with
+    (*if a player makes a valid move, it is now the next player's turn*)
+    | "B_Bishop" | "W_Bishop" ->
+        if is_valid_bishop_move start_row start_col end_row end_col state then
+          let _ = update_turn () in
+          true
+        else false
+    | "B_Rook" | "W_Rook" ->
+        if is_valid_rook_move start_row start_col end_row end_col state then
+          let _ = update_turn () in
+          true
+        else false
+    | "B_Knight" | "W_Knight" ->
+        if is_valid_knight_move start_row start_col end_row end_col then
+          let _ = update_turn () in
+          true
+        else false
+    | "B_Queen" | "W_Queen" ->
+        if is_valid_queen_move start_row start_col end_row end_col state then
+          let _ = update_turn () in
+          true
+        else false
+    | "B_King" | "W_King" ->
+        if is_valid_king_move start_row start_col end_row end_col then
+          let _ = update_turn () in
+          true
+        else false
+    | "B_Pawn" | "W_Pawn" ->
+        if is_valid_pawn_move piece start_row start_col end_row end_col state
+        then
+          let _ = update_turn () in
+          true
+        else false
+    | _ -> false
