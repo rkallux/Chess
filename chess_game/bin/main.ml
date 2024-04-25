@@ -1,5 +1,4 @@
 open GMain
-open Chess_game
 
 (** Initialize GTK library. *)
 let _ = GtkMain.Main.init ()
