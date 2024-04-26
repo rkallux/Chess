@@ -1,3 +1,5 @@
+let has_moved = [| false; false; false; false; false |]
+
 let rec bishop_move_h start_row start_col end_row end_col acc =
   if start_row < end_row && start_col < end_col then
     if start_row = end_row - 1 && start_col = end_col - 1 then acc
@@ -125,6 +127,20 @@ let update_turn () =
   | 'B' -> turn := 'W'
   | _ -> failwith ""
 
+let play_turn p =
+  if p then (
+    update_turn ();
+    true)
+  else false
+
+let update_rook_moved r c =
+  match (r, c) with
+  | 0, 0 -> has_moved.(0) <- true
+  | 0, 7 -> has_moved.(1) <- true
+  | 7, 0 -> has_moved.(2) <- true
+  | 7, 7 -> has_moved.(3) <- true
+  | _ -> ()
+
 (** [is_valid_move piece start_row start_col end_row end_col state] checks if a
     move from [start_row, start_col] to [end_row, end_col] is valid based on the
     type of [piece] and the current [state] of the board. *)
@@ -136,34 +152,22 @@ let is_valid_move piece start_row start_col end_row end_col state =
     match piece with
     (*if a player makes a valid move, it is now the next player's turn*)
     | "B_Bishop" | "W_Bishop" ->
-        if is_valid_bishop_move start_row start_col end_row end_col state then
-          let _ = update_turn () in
-          true
-        else false
+        play_turn
+          (is_valid_bishop_move start_row start_col end_row end_col state)
     | "B_Rook" | "W_Rook" ->
         if is_valid_rook_move start_row start_col end_row end_col state then
-          let _ = update_turn () in
-          true
-        else false
+          update_rook_moved start_row start_col;
+        play_turn (is_valid_rook_move start_row start_col end_row end_col state)
     | "B_Knight" | "W_Knight" ->
-        if is_valid_knight_move start_row start_col end_row end_col then
-          let _ = update_turn () in
-          true
-        else false
+        play_turn (is_valid_knight_move start_row start_col end_row end_col)
     | "B_Queen" | "W_Queen" ->
-        if is_valid_queen_move start_row start_col end_row end_col state then
-          let _ = update_turn () in
-          true
-        else false
+        play_turn
+          (is_valid_queen_move start_row start_col end_row end_col state)
     | "B_King" | "W_King" ->
         if is_valid_king_move start_row start_col end_row end_col then
-          let _ = update_turn () in
-          true
-        else false
+          has_moved.(4) <- true;
+        play_turn (is_valid_king_move start_row start_col end_row end_col)
     | "B_Pawn" | "W_Pawn" ->
-        if is_valid_pawn_move piece start_row start_col end_row end_col state
-        then
-          let _ = update_turn () in
-          true
-        else false
+        play_turn
+          (is_valid_pawn_move piece start_row start_col end_row end_col state)
     | _ -> false
