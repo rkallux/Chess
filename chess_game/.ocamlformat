@@ -1,5 +1,5 @@
 doc-comments = before
-profile = conventional
+
 break-cases = fit-or-vertical
 exp-grouping = preserve
 parse-docstrings = true

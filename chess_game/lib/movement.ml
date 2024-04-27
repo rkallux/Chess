@@ -1,4 +1,5 @@
-let has_moved = [| false; false; false; false; false |]
+let has_moved = [| false; false; false; false; false; false |]
+(* Corresponds to [wksr, wqsr, bksr, bqsr, wk, bk] *)
 
 let rec bishop_move_h start_row start_col end_row end_col acc =
   if start_row < end_row && start_col < end_col then
@@ -135,15 +136,12 @@ let play_turn p =
 
 let update_rook_moved r c =
   match (r, c) with
-  | 0, 0 -> has_moved.(0) <- true
-  | 0, 7 -> has_moved.(1) <- true
-  | 7, 0 -> has_moved.(2) <- true
-  | 7, 7 -> has_moved.(3) <- true
+  | 7, 7 -> has_moved.(0) <- true (* White kingside rook has moved *)
+  | 7, 0 -> has_moved.(1) <- true (* White queenside rook has moved *)
+  | 0, 7 -> has_moved.(2) <- true (* Black kingside rook has moved *)
+  | 0, 0 -> has_moved.(3) <- true (* Black queenside rook has moved *)
   | _ -> ()
 
-(** [is_valid_move piece start_row start_col end_row end_col state] checks if a
-    move from [start_row, start_col] to [end_row, end_col] is valid based on the
-    type of [piece] and the current [state] of the board. *)
 let is_valid_move piece start_row start_col end_row end_col state =
   (*only a valid move if the correct player is moving a piece and is not landing
     on a square occupied by one of that player's pieces*)
@@ -163,7 +161,11 @@ let is_valid_move piece start_row start_col end_row end_col state =
     | "B_Queen" | "W_Queen" ->
         play_turn
           (is_valid_queen_move start_row start_col end_row end_col state)
-    | "B_King" | "W_King" ->
+    | "B_King" ->
+        if is_valid_king_move start_row start_col end_row end_col then
+          has_moved.(5) <- true;
+        play_turn (is_valid_king_move start_row start_col end_row end_col)
+    | "W_King" ->
         if is_valid_king_move start_row start_col end_row end_col then
           has_moved.(4) <- true;
         play_turn (is_valid_king_move start_row start_col end_row end_col)
@@ -171,3 +173,39 @@ let is_valid_move piece start_row start_col end_row end_col state =
         play_turn
           (is_valid_pawn_move piece start_row start_col end_row end_col state)
     | _ -> false
+
+let checks_for_castle a b c d state =
+  (* a, b, c, d are just factored out variables (not especially meaningful) *)
+  state.(a).(b) = None
+  && state.(a).(c) = None
+  && (!turn = if a = 7 then 'W' else 'B')
+  && (not has_moved.(if a = 7 then 4 else 5))
+  && not has_moved.(d)
+
+let can_castle start_row start_col end_row end_col state =
+  match (start_row, start_col, end_row, end_col) with
+  | 7, 4, 7, 6 -> checks_for_castle 7 5 6 0 state
+  | 7, 4, 7, 2 -> state.(7).(1) = None && checks_for_castle 7 2 3 1 state
+  | 0, 4, 0, 6 -> checks_for_castle 0 5 6 2 state
+  | 0, 4, 0, 2 -> state.(0).(1) = None && checks_for_castle 0 2 3 3 state
+  | _ -> false
+
+let castle start_row start_col end_row end_col =
+  match (start_row, start_col, end_row, end_col) with
+  | 7, 4, 7, 6 ->
+      update_turn ();
+      has_moved.(4) <- true;
+      "wksc" (* White kingside castle*)
+  | 7, 4, 7, 2 ->
+      update_turn ();
+      has_moved.(4) <- true;
+      "wqsc" (* White queenside castle*)
+  | 0, 4, 0, 6 ->
+      update_turn ();
+      has_moved.(5) <- true;
+      "bksc" (* Black kingside castle*)
+  | 0, 4, 0, 2 ->
+      update_turn ();
+      has_moved.(5) <- true;
+      "bqsc" (* Black queenside castle*)
+  | _ -> ""

@@ -1,4 +1,5 @@
 open GMain
+open Chess_game
 
 (** Initialize GTK library. *)
 let _ = GtkMain.Main.init ()
@@ -81,6 +82,22 @@ let set_square_img row col =
     (GdkPixbuf.from_file ("assets/" ^ piece_square row col ^ ".png"));
   img
 
+let do_castle button c ke rs re =
+  (* color, king end, rook start, rook end*)
+  ignore
+    (GMisc.image
+       ~pixbuf:(set_square_img prev.row prev.col)
+       ~packing:button#set_image ());
+  ignore (GMisc.image ~packing:buttons.(prev.row).(prev.col)#set_image ());
+  ignore
+    (GMisc.image ~pixbuf:(set_square_img c rs)
+       ~packing:buttons.(c).(re)#set_image ());
+  ignore (GMisc.image ~packing:buttons.(c).(rs)#set_image ());
+  state.(c).(ke) <- state.(c).(4);
+  state.(c).(4) <- None;
+  state.(c).(re) <- state.(c).(rs);
+  state.(c).(rs) <- None
+
 (**[create_chessboard_window] creates a window with a standard chess board setup*)
 let create_chessboard_window () =
   let window = GWindow.window ~width ~height ~title:"Board" () in
@@ -113,7 +130,7 @@ let create_chessboard_window () =
            (* If prev square is a piece *)
            if
              piece_square prev.row prev.col <> ""
-             && Chess_game.Movement.is_valid_move
+             && Movement.is_valid_move
                   (piece_square prev.row prev.col)
                   prev.row prev.col row col state
            then (
@@ -128,6 +145,17 @@ let create_chessboard_window () =
              (* move prev piece to new location *)
              state.(row).(col) <- state.(prev.row).(prev.col);
              state.(prev.row).(prev.col) <- None)
+           else if
+             (piece_square prev.row prev.col = "B_King"
+             || piece_square prev.row prev.col = "W_King")
+             && Movement.can_castle prev.row prev.col row col state
+           then
+             match Movement.castle prev.row prev.col row col with
+             | "wksc" -> do_castle button 7 6 7 5
+             | "wqsc" -> do_castle button 7 2 0 3
+             | "bksc" -> do_castle button 0 6 7 5
+             | "bqsc" -> do_castle button 0 2 0 3
+             | _ -> failwith "Should never reach this case"
            else (
              prev.row <- row;
              prev.col <- col)));
