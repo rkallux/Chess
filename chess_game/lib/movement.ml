@@ -225,3 +225,8 @@ let piece_valid_moves piece start_row start_col state =
   List.filter
     (fun e -> is_valid_move piece start_row start_col (fst e) (snd e) state)
     board_list
+
+let is_capture piece sr sc er ec state =
+  if is_valid_move piece sr sc er ec state && state.(er).(ec) <> None then true
+  else false
+(* else false *)

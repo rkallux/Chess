@@ -73,13 +73,75 @@ let do_castle button c ke rs re =
   state.(c).(re) <- state.(c).(rs);
   state.(c).(rs) <- None
 
+(**[captured_W] contains a list of all the white pieces that have been captured,
+   sorted based on the pieces' material value*)
+let captured_W = ref []
+
+(**[captured_B] contains a list of all the black pieces that have been captured,
+   sorted based on the pieces' material value*)
+let captured_B = ref []
+
+(**[material piece] returns the material value of a piece *)
+let material piece =
+  match String.sub piece 2 (String.length piece - 2) with
+  | "Pawn" -> 1
+  | "Rook" -> 5
+  | "Bishop" -> 3
+  | "Knight" -> 3
+  | "Queen" -> 9
+  | _ -> 0
+
+(**[total_material captured] returns the sum of the material value of all pieces
+   in [captured]*)
+let rec total_material captured =
+  match captured with
+  | [] -> 0
+  | h :: t -> material h + total_material t
+
+(**[material_advantage ()] is a tuple whose first element is the color that has
+   the material advantage and whose second element is the value of the
+   advantage. returns [("same", 0)] if the two sides are equal in terms of
+   material*)
+let material_advantage () =
+  let adv = abs (total_material !captured_B - total_material !captured_W) in
+  if total_material !captured_B - total_material !captured_W = 0 then ("same", 0)
+  else if total_material !captured_B - total_material !captured_W > 0 then
+    ("W", adv)
+  else ("B", adv)
+
+let rec print_lst lst =
+  match lst with
+  | [] -> print_endline ""
+  | h :: t ->
+      print_string (h ^ " ");
+      print_lst t
+
+let turn () = !Movement.turn
+
+(**[update_captures row col] adds the piece at row [row] and column [col] into
+   [captured_W] if it is a white piece and [captured_B] if it is black*)
+let update_captures row col =
+  match state.(row).(col) with
+  | Some p -> (
+      match p.[0] with
+      | 'W' ->
+          captured_W :=
+            List.sort (fun p1 p2 -> material p1 - material p2) (p :: !captured_W);
+          print_lst !captured_W
+      | 'B' ->
+          captured_B :=
+            List.sort (fun p1 p2 -> material p1 - material p2) (p :: !captured_B);
+          print_lst !captured_B
+      | _ -> failwith "un")
+  | _ -> failwith "un"
+
 (**[create_chessboard_window] creates a window with a standard chess board setup*)
 let create_chessboard_window () =
   let window = GWindow.window ~width ~height ~title:"Board" () in
   ignore (window#connect#destroy ~callback:Main.quit);
 
   (* Vertical box for the Quit button + chessboard *)
-  let vbox = GPack.vbox ~packing:window#add () in
+  let vbox = GPack.vbox ~width ~height ~packing:window#add () in
 
   (* Quit button *)
   let quit_button = GButton.button ~label:"Quit" ~packing:vbox#pack () in
@@ -109,6 +171,12 @@ let create_chessboard_window () =
                   (piece_square prev.row prev.col)
                   prev.row prev.col row col state
            then (
+             print_endline (turn () ^ " to move");
+             print_endline
+               (fst (material_advantage ())
+               ^ string_of_int (snd (material_advantage ())));
+             (*If the prev piece is moving onto a new piece, it is a capture*)
+             if state.(row).(col) <> None then update_captures row col else ();
              (* Then set new piece at new square *)
              ignore
                (GMisc.image
