@@ -117,15 +117,15 @@ let same_color piece end_row end_col state =
   in
   if piece.[0] = end_piece.[0] then true else false
 
-(**[turn] contains the color of the player to move. ['W'] means white to move
-   and ['B'] means black to move.*)
-let turn = ref 'W'
+(**[turn] contains the color of the player to move. ["W"] means white to move
+   and ["B"] means black to move.*)
+let turn = ref "W"
 
 (**[update_turn ()] allows the next player to move.*)
 let update_turn () =
   match !turn with
-  | 'W' -> turn := 'B'
-  | 'B' -> turn := 'W'
+  | "W" -> turn := "B"
+  | "B" -> turn := "W"
   | _ -> failwith ""
 
 let play_turn p =
@@ -145,7 +145,8 @@ let update_rook_moved r c =
 let is_valid_move piece start_row start_col end_row end_col state =
   (*only a valid move if the correct player is moving a piece and is not landing
     on a square occupied by one of that player's pieces*)
-  if piece.[0] <> !turn || same_color piece end_row end_col state then false
+  if String.sub piece 0 1 <> !turn || same_color piece end_row end_col state
+  then false
   else
     match piece with
     (*if a player makes a valid move, it is now the next player's turn*)
@@ -178,7 +179,7 @@ let checks_for_castle a b c d state =
   (* a, b, c, d are just factored out variables (not especially meaningful) *)
   state.(a).(b) = None
   && state.(a).(c) = None
-  && (!turn = if a = 7 then 'W' else 'B')
+  && (!turn = if a = 7 then "W" else "B")
   && (not has_moved.(if a = 7 then 4 else 5))
   && not has_moved.(d)
 
@@ -209,3 +210,8 @@ let castle start_row start_col end_row end_col =
       has_moved.(5) <- true;
       "bqsc" (* Black queenside castle*)
   | _ -> ""
+
+let is_capture piece sr sc er ec state =
+  if is_valid_move piece sr sc er ec state && state.(er).(ec) <> None then true
+  else false
+(* else false *)
