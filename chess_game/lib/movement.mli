@@ -6,8 +6,6 @@ val is_valid_move :
 
 (** [can_castle start_row start_col end_row end_col state] is true if player
     inputs a valid castle. *)
-(** [can_castle start_row start_col end_row end_col state] is true if player
-    inputs a valid castle. *)
 val can_castle : int -> int -> int -> int -> string option array array -> bool
 
 (** [castle start_row start_col end_row end_col] is the string representation of
