@@ -1,5 +1,7 @@
 doc-comments = before
 
+break-collection-expressions = wrap
+
 break-cases = fit-or-vertical
 exp-grouping = preserve
 parse-docstrings = true

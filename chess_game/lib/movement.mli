@@ -11,6 +11,10 @@ val can_castle : int -> int -> int -> int -> string option array array -> bool
 (** [castle start_row start_col end_row end_col] is the string representation of
     what type of castle was made. For example "wksc" stands for a white king
     side castle. *)
+
+(** [castle start_row start_col end_row end_col] is the string representation of
+    what type of castle was made. For example "wksc" stands for a white king
+    side castle. *)
 val castle : int -> int -> int -> int -> string
 
 (**[is_capture start_row start_col end_row end_col] is true if the move made
@@ -23,3 +27,8 @@ val turn : string ref
 
 (**[material piece] is the material value of [piece]*)
 val material : string -> int
+
+(** [piece_valid moves piece start_row start_col state] is a list of all of the
+    legal moves a piece can move to on a board. *)
+val piece_valid_moves :
+  string -> int -> int -> string option array array -> (int * int) list

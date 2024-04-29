@@ -12,48 +12,23 @@ let height = 600
 let state =
   [|
     [|
-      Some "B_Rook";
-      Some "B_Knight";
-      Some "B_Bishop";
-      Some "B_Queen";
-      Some "B_King";
-      Some "B_Bishop";
-      Some "B_Knight";
-      Some "B_Rook";
+      Some "B_Rook"; Some "B_Knight"; Some "B_Bishop"; Some "B_Queen";
+      Some "B_King"; Some "B_Bishop"; Some "B_Knight"; Some "B_Rook";
     |];
     [|
-      Some "B_Pawn";
-      Some "B_Pawn";
-      Some "B_Pawn";
-      Some "B_Pawn";
-      Some "B_Pawn";
-      Some "B_Pawn";
-      Some "B_Pawn";
-      Some "B_Pawn";
-    |];
-    [| None; None; None; None; None; None; None; None |];
+      Some "B_Pawn"; Some "B_Pawn"; Some "B_Pawn"; Some "B_Pawn"; Some "B_Pawn";
+      Some "B_Pawn"; Some "B_Pawn"; Some "B_Pawn";
+    |]; [| None; None; None; None; None; None; None; None |];
     [| None; None; None; None; None; None; None; None |];
     [| None; None; None; None; None; None; None; None |];
     [| None; None; None; None; None; None; None; None |];
     [|
-      Some "W_Pawn";
-      Some "W_Pawn";
-      Some "W_Pawn";
-      Some "W_Pawn";
-      Some "W_Pawn";
-      Some "W_Pawn";
-      Some "W_Pawn";
-      Some "W_Pawn";
+      Some "W_Pawn"; Some "W_Pawn"; Some "W_Pawn"; Some "W_Pawn"; Some "W_Pawn";
+      Some "W_Pawn"; Some "W_Pawn"; Some "W_Pawn";
     |];
     [|
-      Some "W_Rook";
-      Some "W_Knight";
-      Some "W_Bishop";
-      Some "W_Queen";
-      Some "W_King";
-      Some "W_Bishop";
-      Some "W_Knight";
-      Some "W_Rook";
+      Some "W_Rook"; Some "W_Knight"; Some "W_Bishop"; Some "W_Queen";
+      Some "W_King"; Some "W_Bishop"; Some "W_Knight"; Some "W_Rook";
     |];
   |]
 
