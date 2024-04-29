@@ -215,3 +215,13 @@ let is_capture piece sr sc er ec state =
   if is_valid_move piece sr sc er ec state && state.(er).(ec) <> None then true
   else false
 (* else false *)
+
+(**[material piece] returns the material value of a piece *)
+let material piece =
+  match String.sub piece 2 (String.length piece - 2) with
+  | "Pawn" -> 1
+  | "Rook" -> 5
+  | "Bishop" -> 3
+  | "Knight" -> 3
+  | "Queen" -> 9
+  | _ -> 0

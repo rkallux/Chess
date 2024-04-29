@@ -20,3 +20,6 @@ val is_capture :
 
 (**[turn] contains ["W"] if it is white to move and ["B"] if it is black to move*)
 val turn : string ref
+
+(**[material piece] is the material value of [piece]*)
+val material : string -> int

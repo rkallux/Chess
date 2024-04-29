@@ -106,22 +106,12 @@ let captured_W = ref []
    sorted based on the pieces' material value*)
 let captured_B = ref []
 
-(**[material piece] returns the material value of a piece *)
-let material piece =
-  match String.sub piece 2 (String.length piece - 2) with
-  | "Pawn" -> 1
-  | "Rook" -> 5
-  | "Bishop" -> 3
-  | "Knight" -> 3
-  | "Queen" -> 9
-  | _ -> 0
-
 (**[total_material captured] returns the sum of the material value of all pieces
    in [captured]*)
 let rec total_material captured =
   match captured with
   | [] -> 0
-  | h :: t -> material h + total_material t
+  | h :: t -> Movement.material h + total_material t
 
 (**[material_advantage ()] is a tuple whose first element is the color that has
    the material advantage and whose second element is the value of the
@@ -151,11 +141,15 @@ let update_captures row col =
       match p.[0] with
       | 'W' ->
           captured_W :=
-            List.sort (fun p1 p2 -> material p1 - material p2) (p :: !captured_W);
+            List.sort
+              (fun p1 p2 -> Movement.material p1 - Movement.material p2)
+              (p :: !captured_W);
           print_lst !captured_W
       | 'B' ->
           captured_B :=
-            List.sort (fun p1 p2 -> material p1 - material p2) (p :: !captured_B);
+            List.sort
+              (fun p1 p2 -> Movement.material p1 - Movement.material p2)
+              (p :: !captured_B);
           print_lst !captured_B
       | _ -> failwith "un")
   | _ -> failwith "un"
@@ -172,10 +166,36 @@ let create_chessboard_window () =
   let quit_button = GButton.button ~label:"Quit" ~packing:vbox#pack () in
   ignore (quit_button#connect#clicked ~callback:Main.quit);
 
+  let rec update_tab (table : GPack.table) lst pos =
+    match lst with
+    | [] -> ()
+    | h :: t ->
+        let dim = 30 in
+        let img = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
+        GdkPixbuf.scale ~dest:img ~width:dim ~height:dim
+          (GdkPixbuf.from_file ("assets/" ^ h ^ ".png"));
+        table#attach ~left:pos ~top:0 ~expand:`BOTH ~fill:`BOTH
+          (GMisc.image ~width:10 ~height:100 ~pixbuf:img ())#coerce;
+        update_tab table t (pos + 1)
+  in
+
   (* Table for chessbaord *)
+  let tableB =
+    GPack.table ~rows:1 ~columns:15 ~homogeneous:true ~packing:vbox#add ()
+  in
+  tableB#attach ~left:5 ~top:0 ~expand:`BOTH ~fill:`BOTH
+    (GMisc.image ~width:10 ~height:100 ())#coerce;
+
   let table =
     GPack.table ~rows:8 ~columns:8 ~homogeneous:true ~packing:vbox#add ()
   in
+
+  let tableW =
+    GPack.table ~rows:1 ~columns:15 ~homogeneous:true ~packing:vbox#add ()
+  in
+  tableW#attach ~left:5 ~top:0 ~expand:`BOTH ~fill:`BOTH
+    (GMisc.image ~width:10 ~height:100 ())#coerce;
+
   (* Function to create a square *)
   let create_square row col =
     let button = GButton.button ~label:"" () in
@@ -201,7 +221,9 @@ let create_chessboard_window () =
                (fst (material_advantage ())
                ^ string_of_int (snd (material_advantage ())));
              (*If the prev piece is moving onto a new piece, it is a capture*)
-             if state.(row).(col) <> None then update_captures row col else ();
+             if state.(row).(col) <> None then update_captures row col;
+             update_tab tableB !captured_W 0;
+             update_tab tableW !captured_B 0;
              (* Then set new piece at new square *)
              ignore
                (GMisc.image
