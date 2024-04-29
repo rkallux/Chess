@@ -241,3 +241,50 @@ let material piece =
   | "Knight" -> 3
   | "Queen" -> 9
   | _ -> 0
+
+(**[captured_W] contains a list of all the white pieces that have been captured,
+   sorted based on the pieces' material value*)
+let captured_W = ref []
+
+(**[captured_B] contains a list of all the black pieces that have been captured,
+   sorted based on the pieces' material value*)
+let captured_B = ref []
+
+(**[update_captures row col] adds the piece at row [row] and column [col] into
+   [captured_W] if it is a white piece and [captured_B] if it is black*)
+let update_captures row col state =
+  if state.(row).(col) = None then ()
+  else
+    match state.(row).(col) with
+    | Some p -> (
+        match p.[0] with
+        | 'W' ->
+            captured_W :=
+              List.sort
+                (fun p1 p2 -> material p1 - material p2)
+                (p :: !captured_W)
+        | 'B' ->
+            captured_B :=
+              List.sort
+                (fun p1 p2 -> material p1 - material p2)
+                (p :: !captured_B)
+        | _ -> failwith "un")
+    | _ -> failwith "un"
+
+(**[total_material captured] returns the sum of the material value of all pieces
+   in [captured]*)
+let rec total_material captured =
+  match captured with
+  | [] -> 0
+  | h :: t -> material h + total_material t
+
+(**[material_advantage ()] is a tuple whose first element is the color that has
+   the material advantage and whose second element is the value of the
+   advantage. returns [("same", 0)] if the two sides are equal in terms of
+   material*)
+let material_advantage () =
+  let adv = abs (total_material !captured_B - total_material !captured_W) in
+  if total_material !captured_B - total_material !captured_W = 0 then ("same", 0)
+  else if total_material !captured_B - total_material !captured_W > 0 then
+    ("W", adv)
+  else ("B", adv)

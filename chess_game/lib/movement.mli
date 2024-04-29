@@ -32,3 +32,8 @@ val material : string -> int
     legal moves a piece can move to on a board. *)
 val piece_valid_moves :
   string -> int -> int -> string option array array -> (int * int) list
+
+val update_captures : int -> int -> string option array array -> unit
+val captured_W : string list ref
+val captured_B : string list ref
+val material_advantage : unit -> string * int
