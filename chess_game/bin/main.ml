@@ -76,8 +76,7 @@ let do_castle button c ke rs re =
 let captured_W = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
 let captured_B = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
 
-let rec update_tab (table : GPack.table) (cap_pieces : GMisc.image array) lst n
-    =
+let rec update_tab (cap_pieces : GMisc.image array) lst n =
   match lst with
   | [] -> ()
   | h :: t ->
@@ -85,11 +84,8 @@ let rec update_tab (table : GPack.table) (cap_pieces : GMisc.image array) lst n
       let img = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
       GdkPixbuf.scale ~dest:img ~width:dim ~height:dim
         (GdkPixbuf.from_file ("assets/" ^ h ^ ".png"));
-      let image = GMisc.image ~width:10 ~height:100 ~pixbuf:img () in
-      table#remove cap_pieces.(n)#coerce;
-      table#attach ~left:n ~top:0 ~expand:`BOTH ~fill:`BOTH image#coerce;
-      cap_pieces.(n) <- image;
-      update_tab table cap_pieces t (n + 1)
+      cap_pieces.(n)#set_pixbuf img;
+      update_tab cap_pieces t (n + 1)
 
 (**[create_chessboard_window] creates a window with a standard chess board setup*)
 let create_chessboard_window () =
@@ -148,8 +144,8 @@ let create_chessboard_window () =
            then (
              (*Update captures, if necessary, and update the table*)
              Movement.update_captures row col state;
-             update_tab tableB captured_B !Movement.captured_B 0;
-             update_tab tableW captured_W !Movement.captured_W 0;
+             update_tab captured_B !Movement.captured_B 0;
+             update_tab captured_W !Movement.captured_W 0;
              (* Then set new piece at new square *)
              ignore
                (GMisc.image

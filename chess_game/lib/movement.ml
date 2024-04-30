@@ -227,10 +227,13 @@ let piece_valid_moves piece start_row start_col state =
     (fun e -> is_valid_move piece start_row start_col (fst e) (snd e) state)
     board_list
 
+(* let all_b_moves state = let state_list = Array.fold_left (fun acc ele -> acc
+   @ Array.to_list ele) [] state in List.filter (fun ele -> String.starts_with
+   ~prefix:"B" ele) state_list *)
+
 let is_capture piece sr sc er ec state =
   if is_valid_move piece sr sc er ec state && state.(er).(ec) <> None then true
   else false
-(* else false *)
 
 (**[material piece] returns the material value of a piece *)
 let material piece =
