@@ -43,7 +43,7 @@ let prev = { row = 4; col = 4 }
 
 (**[piece_square r c] is the type of piece at row [r] and column [c] at the
    beginning of the game*)
-let piece_square (row : int) (col : int) =
+let piece_square row col =
   match state.(row).(col) with
   | Some piece -> piece
   | None -> ""
@@ -138,7 +138,7 @@ let create_chessboard_window () =
            (* If prev square is a piece *)
            if
              piece_square prev.row prev.col <> ""
-             && Movement.is_valid_move
+             && Movement.play_move
                   (piece_square prev.row prev.col)
                   prev.row prev.col row col state
            then (

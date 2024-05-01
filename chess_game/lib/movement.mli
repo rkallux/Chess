@@ -1,7 +1,7 @@
-(** [is_valid_move piece start_row start_col end_row end_col state] is true if
-    the move made by a player is allowed. Does not account for castling.
-    Currently does not account for checks*)
-val is_valid_move :
+(** [play_move piece start_row start_col end_row end_col state] is true if the
+    move made by a player is allowed. Does not account for castling. Currently
+    does not account for checks*)
+val play_move :
   string -> int -> int -> int -> int -> string option array array -> bool
 
 (** [can_castle start_row start_col end_row end_col state] is true if player
