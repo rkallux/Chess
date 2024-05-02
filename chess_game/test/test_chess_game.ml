@@ -188,7 +188,7 @@ let create_chessboard_window () =
            (* If prev square is a piece *)
            if
              piece_square prev.row prev.col <> ""
-             && Movement.is_valid_move
+             && Movement.play_move
                   (piece_square prev.row prev.col)
                   prev.row prev.col row col state
            then (

@@ -43,7 +43,7 @@ let prev = { row = 4; col = 4 }
 
 (**[piece_square r c] is the type of piece at row [r] and column [c] at the
    beginning of the game*)
-let piece_square (row : int) (col : int) =
+let piece_square row col =
   match state.(row).(col) with
   | Some piece -> piece
   | None -> ""
@@ -73,7 +73,10 @@ let do_castle button c ke rs re =
   state.(c).(re) <- state.(c).(rs);
   state.(c).(rs) <- None
 
-let rec update_tab (table : GPack.table) lst pos =
+let captured_W = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
+let captured_B = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
+
+let rec update_tab (cap_pieces : GMisc.image array) lst n =
   match lst with
   | [] -> ()
   | h :: t ->
@@ -81,15 +84,8 @@ let rec update_tab (table : GPack.table) lst pos =
       let img = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
       GdkPixbuf.scale ~dest:img ~width:dim ~height:dim
         (GdkPixbuf.from_file ("assets/" ^ h ^ ".png"));
-      table#attach ~left:pos ~top:0 ~expand:`BOTH ~fill:`BOTH
-        (GMisc.image ~width:10 ~height:100 ~pixbuf:img ())#coerce;
-      update_tab table t (pos + 1)
-
-(* let turn () = !Movement.turn *)
-
-(* let text_box () = let score = "+" ^ (Movement.material_advantage () |> snd |>
-   string_of_int) in let buff = GText.buffer ~text:score () in GText.view
-   ~buffer:buff () *)
+      cap_pieces.(n)#set_pixbuf img;
+      update_tab cap_pieces t (n + 1)
 
 (**[create_chessboard_window] creates a window with a standard chess board setup*)
 let create_chessboard_window () =
@@ -107,8 +103,11 @@ let create_chessboard_window () =
   let tableB =
     GPack.table ~rows:1 ~columns:15 ~homogeneous:true ~packing:vbox#add ()
   in
-  tableB#attach ~left:0 ~top:0 ~expand:`BOTH ~fill:`BOTH
-    (GMisc.image ~width:10 ~height:100 ())#coerce;
+  for cap_p = 0 to 14 do
+    let image = GMisc.image ~width:10 ~height:100 () in
+    tableB#attach ~left:cap_p ~top:0 ~expand:`BOTH ~fill:`BOTH image#coerce;
+    captured_B.(cap_p) <- image
+  done;
 
   let table =
     GPack.table ~rows:8 ~columns:8 ~homogeneous:true ~packing:vbox#add ()
@@ -117,8 +116,11 @@ let create_chessboard_window () =
   let tableW =
     GPack.table ~rows:1 ~columns:15 ~homogeneous:true ~packing:vbox#add ()
   in
-  tableW#attach ~left:0 ~top:0 ~expand:`BOTH ~fill:`BOTH
-    (GMisc.image ~width:10 ~height:100 ())#coerce;
+  for cap_p = 0 to 14 do
+    let image = GMisc.image ~width:10 ~height:100 () in
+    tableW#attach ~left:cap_p ~top:0 ~expand:`BOTH ~fill:`BOTH image#coerce;
+    captured_W.(cap_p) <- image
+  done;
 
   (* Function to create a square *)
   let create_square row col =
@@ -136,16 +138,14 @@ let create_chessboard_window () =
            (* If prev square is a piece *)
            if
              piece_square prev.row prev.col <> ""
-             && Movement.is_valid_move
+             && Movement.play_move
                   (piece_square prev.row prev.col)
                   prev.row prev.col row col state
            then (
              (*Update captures, if necessary, and update the table*)
              Movement.update_captures row col state;
-             update_tab tableB !Movement.captured_W 0;
-             (* tableB#attach ~left:(List.length !Movement.captured_W) ~top:0
-                (text_box ())#coerce; *)
-             update_tab tableW !Movement.captured_B 0;
+             update_tab captured_B !Movement.captured_B 0;
+             update_tab captured_W !Movement.captured_W 0;
              (* Then set new piece at new square *)
              ignore
                (GMisc.image
