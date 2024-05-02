@@ -344,6 +344,7 @@ let piece_square_tests =
 
 let update_captures_tests =
   [
+    (* Test case: Update captures when capturing pieces of the same color *)
     ( "Update captures when capturing pieces of the\n   same color" >:: fun _ ->
       captured_B := [ "B_Rook"; "B_Pawn" ];
       (* Set up the board with a black king *) state.(3).(3) <- Some "B_King";
@@ -351,6 +352,7 @@ let update_captures_tests =
       update_captures 3 3;
       (* Verify that the captured list now contains the captured king *)
       assert_equal [ "B_King"; "B_Pawn"; "B_Rook" ] !captured_B );
+    (* Test case: Update captures when capturing same-colored king *)
     ( "Update captures when\n   capturing same-colored king" >:: fun _ ->
       captured_W := [ "W_Queen" ];
       (* Set up the board with a white king *) state.(4).(4) <- Some "W_King";
@@ -358,6 +360,7 @@ let update_captures_tests =
       update_captures 4 4;
       (* Verify that the captured list now contains the captured king *)
       assert_equal [ "W_King"; "W_Queen" ] !captured_W );
+    (* Test case: Update captures when capturing opposite-colored king *)
     ( "Update captures when capturing\n   opposite-colored king" >:: fun _ ->
       captured_B := [ "B_Queen" ];
       (* Set up the board with a black king *) state.(3).(3) <- Some "B_King";
@@ -365,6 +368,7 @@ let update_captures_tests =
       update_captures 3 3;
       (* Verify that the captured list now contains the captured king *)
       assert_equal [ "B_King"; "B_Queen" ] !captured_B );
+    (* Test case: Update captures for empty board *)
     ( "Update captures for empty board" >:: fun _ ->
       captured_W := [];
       captured_B := [];
@@ -374,11 +378,23 @@ let update_captures_tests =
       (* Verify that both captured lists remain empty *)
       assert_equal [] !captured_W;
       assert_equal [] !captured_B );
+    (* Additional test cases can be added here *)
+    (* Test case: Update captures when capturing a white piece *)
+    ( "Update captures when capturing a white piece" >:: fun _ ->
+      captured_W := [ "W_Bishop"; "W_Knight" ];
+      (* Set up the board with a black king and white pieces *)
+      state.(3).(3) <- Some "B_King";
+      state.(2).(2) <- Some "W_Bishop";
+      state.(4).(4) <- Some "W_Knight";
+      (* Simulate capturing a white piece at position (2, 2) *)
+      update_captures 2 2;
+      (* Verify that the captured list now contains the captured white piece *)
+      assert_equal [] !captured_B );
   ]
 
 let additional_update_captures_tests =
   [
-    (* Updated test case for updating captures on an empty board *)
+    (* Test case for updating captures on an empty board *)
     ( "Update captures for empty board" >:: fun _ ->
       captured_W := [];
       captured_B := [];
@@ -388,6 +404,34 @@ let additional_update_captures_tests =
       update_captures 2 2;
       (* Verify that both captured lists remain empty *)
       assert_equal [] !captured_W;
+      assert_equal [] !captured_B );
+    (* Test case for capturing a black piece on an otherwise empty board *)
+    ( "Update captures for capturing a black piece on an empty board"
+    >:: fun _ ->
+      captured_W := [];
+      captured_B := [];
+      (* Clear the board *)
+      Array.iter (fun arr -> Array.fill arr 0 8 None) state;
+      (* Place a black piece on position (2, 2) *)
+      state.(2).(2) <- Some "B_Rook";
+      (* Simulate capturing the black piece at position (2, 2) *)
+      update_captures 2 2;
+      (* Verify that the captured list contains the black piece *)
+      assert_equal [ "B_Rook" ] !captured_B;
+      assert_equal [] !captured_W );
+    (* Test case for capturing a white piece on an otherwise empty board *)
+    ( "Update captures for capturing a white piece on an empty board"
+    >:: fun _ ->
+      captured_W := [];
+      captured_B := [];
+      (* Clear the board *)
+      Array.iter (fun arr -> Array.fill arr 0 8 None) state;
+      (* Place a white piece on position (5, 5) *)
+      state.(5).(5) <- Some "W_Knight";
+      (* Simulate capturing the white piece at position (5, 5) *)
+      update_captures 5 5;
+      (* Verify that the captured list contains the white piece *)
+      assert_equal [ "W_Knight" ] !captured_W;
       assert_equal [] !captured_B );
   ]
 
@@ -415,6 +459,24 @@ let additional_piece_square_tests =
     ( "Piece square at (15, 15)" >:: fun _ ->
       assert_raises (Invalid_argument "index out of bounds") (fun () ->
           piece_square 15 15) );
+    ( "Piece square at (16, 15)" >:: fun _ ->
+      assert_raises (Invalid_argument "index out of bounds") (fun () ->
+          piece_square 16 15) );
+    ( "Piece square at (-10, -5)" >:: fun _ ->
+      assert_raises (Invalid_argument "index out of bounds") (fun () ->
+          piece_square (-10) (-5)) );
+    ( "Piece square at (100, 1)" >:: fun _ ->
+      assert_raises (Invalid_argument "index out of bounds") (fun () ->
+          piece_square 100 1) );
+    ( "Piece square at (1, -1)" >:: fun _ ->
+      assert_raises (Invalid_argument "index out of bounds") (fun () ->
+          piece_square 1 (-1)) );
+    ( "Piece square at (0, -1)" >:: fun _ ->
+      assert_raises (Invalid_argument "index out of bounds") (fun () ->
+          piece_square 0 (-1)) );
+    ( "Piece square at (15000, 15000)" >:: fun _ ->
+      assert_raises (Invalid_argument "index out of bounds") (fun () ->
+          piece_square 15000 15000) );
   ]
 
 let suite =
