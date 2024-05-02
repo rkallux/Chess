@@ -107,7 +107,6 @@ let promote_pawn color =
     pieces;
   ignore (dialog#run ());
   dialog#destroy ();
-  print_endline "Done";
   !result
 
 (**[create_chessboard_window] creates a window with a standard chess board setup*)

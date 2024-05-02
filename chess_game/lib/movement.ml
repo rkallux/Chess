@@ -1,3 +1,33 @@
+let state =
+  [|
+    [|
+      Some "B_Rook"; Some "B_Knight"; Some "B_Bishop"; Some "B_Queen";
+      Some "B_King"; Some "B_Bishop"; Some "B_Knight"; Some "B_Rook";
+    |];
+    [|
+      Some "B_Pawn"; Some "B_Pawn"; Some "B_Pawn"; Some "B_Pawn"; Some "B_Pawn";
+      Some "B_Pawn"; Some "B_Pawn"; Some "B_Pawn";
+    |]; [| None; None; None; None; None; None; None; None |];
+    [| None; None; None; None; None; None; None; None |];
+    [| None; None; None; None; None; None; None; None |];
+    [| None; None; None; None; None; None; None; None |];
+    [|
+      Some "W_Pawn"; Some "W_Pawn"; Some "W_Pawn"; Some "W_Pawn"; Some "W_Pawn";
+      Some "W_Pawn"; Some "W_Pawn"; Some "W_Pawn";
+    |];
+    [|
+      Some "W_Rook"; Some "W_Knight"; Some "W_Bishop"; Some "W_Queen";
+      Some "W_King"; Some "W_Bishop"; Some "W_Knight"; Some "W_Rook";
+    |];
+  |]
+
+(**[piece_square r c] is the type of piece at row [r] and column [c] at the
+   beginning of the game*)
+let piece_square_ind row col =
+  match state.(row).(col) with
+  | Some piece -> piece
+  | None -> ""
+
 let has_moved = [| false; false; false; false; false; false |]
 
 (* Corresponds to [wksr, wqsr, bksr, bqsr, wk, bk] *)
@@ -111,6 +141,8 @@ let is_valid_pawn_move piece start_row start_col end_row end_col state =
       (* TODO: should check that end square is an opposing color *)
   | _ -> false
 
+let has_piece row col = piece_square_ind row col <> ""
+
 (**[same_color piece end_row end_col state] is true if the piece at the position
    of ([end_row], [end_column] in state has the same color as [piece] and false
    otherwise)*)
@@ -171,15 +203,18 @@ let checks_for_castle a b c d state =
   && (not has_moved.(if a = 7 then 4 else 5))
   && not has_moved.(d)
 
-let can_castle start_row start_col end_row end_col state =
-  match (start_row, start_col, end_row, end_col) with
-  | 7, 4, 7, 6 -> checks_for_castle 7 5 6 0 state
-  | 7, 4, 7, 2 -> state.(7).(1) = None && checks_for_castle 7 2 3 1 state
-  | 0, 4, 0, 6 -> checks_for_castle 0 5 6 2 state
-  | 0, 4, 0, 2 -> state.(0).(1) = None && checks_for_castle 0 2 3 3 state
-  | _ -> false
+let is_valid_castle start_row start_col end_row end_col =
+  let piece = piece_square_ind start_row start_col in
+  if not (piece = "B_King" || piece = "W_King") then false
+  else
+    match (start_row, start_col, end_row, end_col) with
+    | 7, 4, 7, 6 -> checks_for_castle 7 5 6 0 state
+    | 7, 4, 7, 2 -> state.(7).(1) = None && checks_for_castle 7 2 3 1 state
+    | 0, 4, 0, 6 -> checks_for_castle 0 5 6 2 state
+    | 0, 4, 0, 2 -> state.(0).(1) = None && checks_for_castle 0 2 3 3 state
+    | _ -> false
 
-let castle start_row start_col end_row end_col =
+let type_castle start_row start_col end_row end_col =
   match (start_row, start_col, end_row, end_col) with
   | 7, 4, 7, 6 ->
       update_turn ();
@@ -198,6 +233,12 @@ let castle start_row start_col end_row end_col =
       has_moved.(5) <- true;
       "bqsc" (* Black queenside castle*)
   | _ -> ""
+
+let castle_state c ke rs re =
+  state.(c).(ke) <- state.(c).(4);
+  state.(c).(4) <- None;
+  state.(c).(re) <- state.(c).(rs);
+  state.(c).(rs) <- None
 
 let board_list =
   [
@@ -254,39 +295,55 @@ let in_check state =
     List.mem (get_piece_square "B_King" state 0 0) (valid_w_moves state)
   else List.mem (get_piece_square "W_King" state 0 0) (valid_b_moves state)
 
-let play_move piece start_row start_col end_row end_col state =
-  (*only a valid move if the correct player is moving a piece and is not landing
-    on a square occupied by one of that player's pieces*)
-  if String.sub piece 0 1 <> !turn || same_color piece end_row end_col state
-  then false
-    (* else if in_check state then ( print_endline "in check"; false) *)
+let _ = in_check
+let promote row col piece = state.(row).(col) <- Some piece
+
+let valid_move start_row start_col end_row end_col =
+  if not (has_piece start_row start_col) then false
   else
-    match piece with
-    (*if a player makes a valid move, it is now the next player's turn*)
-    | "B_Bishop" | "W_Bishop" ->
-        play_turn
-          (is_valid_bishop_move start_row start_col end_row end_col state)
-    | "B_Rook" | "W_Rook" ->
-        if is_valid_rook_move start_row start_col end_row end_col state then
-          update_rook_moved start_row start_col;
-        play_turn (is_valid_rook_move start_row start_col end_row end_col state)
-    | "B_Knight" | "W_Knight" ->
-        play_turn (is_valid_knight_move start_row start_col end_row end_col)
-    | "B_Queen" | "W_Queen" ->
-        play_turn
-          (is_valid_queen_move start_row start_col end_row end_col state)
-    | "B_King" ->
-        if is_valid_king_move start_row start_col end_row end_col then
-          has_moved.(5) <- true;
-        play_turn (is_valid_king_move start_row start_col end_row end_col)
-    | "W_King" ->
-        if is_valid_king_move start_row start_col end_row end_col then
-          has_moved.(4) <- true;
-        play_turn (is_valid_king_move start_row start_col end_row end_col)
-    | "B_Pawn" | "W_Pawn" ->
-        play_turn
-          (is_valid_pawn_move piece start_row start_col end_row end_col state)
-    | _ -> false
+    let piece = piece_square_ind start_row start_col in
+    (*only a valid move if the correct player is moving a piece and is not
+      landing on a square occupied by one of that player's pieces*)
+    if String.sub piece 0 1 <> !turn || same_color piece end_row end_col state
+    then false
+      (* else if in_check state then ( print_endline "in check"; false) *)
+    else
+      let piece = piece_square_ind start_row start_col in
+      (*only a valid move if the correct player is moving a piece and is not
+        landing on a square occupied by one of that player's pieces*)
+      print_endline "play move";
+      if String.sub piece 0 1 <> !turn || same_color piece end_row end_col state
+      then false
+        (* else if in_check state then ( print_endline "in check"; false) *)
+      else
+        match piece with
+        (*if a player makes a valid move, it is now the next player's turn*)
+        | "B_Bishop" | "W_Bishop" ->
+            play_turn
+              (is_valid_bishop_move start_row start_col end_row end_col state)
+        | "B_Rook" | "W_Rook" ->
+            if is_valid_rook_move start_row start_col end_row end_col state then
+              update_rook_moved start_row start_col;
+            play_turn
+              (is_valid_rook_move start_row start_col end_row end_col state)
+        | "B_Knight" | "W_Knight" ->
+            play_turn (is_valid_knight_move start_row start_col end_row end_col)
+        | "B_Queen" | "W_Queen" ->
+            play_turn
+              (is_valid_queen_move start_row start_col end_row end_col state)
+        | "B_King" ->
+            if is_valid_king_move start_row start_col end_row end_col then
+              has_moved.(5) <- true;
+            play_turn (is_valid_king_move start_row start_col end_row end_col)
+        | "W_King" ->
+            if is_valid_king_move start_row start_col end_row end_col then
+              has_moved.(4) <- true;
+            play_turn (is_valid_king_move start_row start_col end_row end_col)
+        | "B_Pawn" | "W_Pawn" ->
+            play_turn
+              (is_valid_pawn_move piece start_row start_col end_row end_col
+                 state)
+        | _ -> false
 
 let is_capture piece sr sc er ec state =
   if is_valid_move piece sr sc er ec state && state.(er).(ec) <> None then true
@@ -312,7 +369,7 @@ let captured_B = ref []
 
 (**[update_captures row col] adds the piece at row [row] and column [col] into
    [captured_W] if it is a white piece and [captured_B] if it is black*)
-let update_captures row col state =
+let update_captures row col =
   if state.(row).(col) = None then ()
   else
     match state.(row).(col) with
@@ -348,3 +405,7 @@ let material_advantage () =
   else if total_material !captured_B - total_material !captured_W > 0 then
     ("W", adv)
   else ("B", adv)
+
+let update_state pr pc er ec =
+  state.(er).(ec) <- state.(pr).(pc);
+  state.(pr).(pc) <- None

@@ -1,21 +1,20 @@
-(** [play_move piece start_row start_col end_row end_col state] is true if the
+(** [valid_move  piece start_row start_col end_row end_col state] is true if the
     move made by a player is allowed. Does not account for castling. Currently
     does not account for checks*)
-val play_move :
-  string -> int -> int -> int -> int -> string option array array -> bool
+val valid_move : int -> int -> int -> int -> bool
 
-(** [can_castle start_row start_col end_row end_col state] is true if player
-    inputs a valid castle. *)
-val can_castle : int -> int -> int -> int -> string option array array -> bool
-
-(** [castle start_row start_col end_row end_col] is the string representation of
-    what type of castle was made. For example "wksc" stands for a white king
-    side castle. *)
+(** [is_valid_castle start_row start_col end_row end_col state] is true if
+    player inputs a valid castle. *)
+val is_valid_castle : int -> int -> int -> int -> bool
 
 (** [castle start_row start_col end_row end_col] is the string representation of
     what type of castle was made. For example "wksc" stands for a white king
     side castle. *)
-val castle : int -> int -> int -> int -> string
+
+(** [type_castle start_row start_col end_row end_col] is the string
+    representation of what type of castle was made. For example "wksc" stands
+    for a white king side castle. *)
+val type_castle : int -> int -> int -> int -> string
 
 (**[is_capture start_row start_col end_row end_col] is true if the move made
    captured a piece and false otherwise*)
@@ -33,7 +32,13 @@ val material : string -> int
 val piece_valid_moves :
   string -> int -> int -> string option array array -> (int * int) list
 
-val update_captures : int -> int -> string option array array -> unit
+val update_captures : int -> int -> unit
 val captured_W : string list ref
 val captured_B : string list ref
 val material_advantage : unit -> string * int
+val state : string option array array
+val piece_square_ind : int -> int -> string
+val castle_state : int -> int -> int -> int -> unit
+val promote : int -> int -> string -> unit
+val update_state : int -> int -> int -> int -> unit
+val has_piece : int -> int -> bool
