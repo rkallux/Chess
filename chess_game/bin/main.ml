@@ -106,7 +106,6 @@ let promote_pawn color =
              dialog#response `DELETE_EVENT)))
     pieces;
   ignore (dialog#run ());
-
   dialog#destroy ();
   print_endline "Done";
   !result
