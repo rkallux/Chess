@@ -18,13 +18,12 @@ type f = {
 let prev = { row = 4; col = 4 }
 
 (**[gen_pixbuf r c] generates the image to be shown at row [r] and column [c] as
-   specified by [Movement.piece_square_ind r c]*)
+   specified by [Movement.piece_at r c]*)
 let gen_pixbuf row col =
   let dim = 65 in
   let img = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
   GdkPixbuf.scale ~dest:img ~width:dim ~height:dim
-    (GdkPixbuf.from_file
-       ("assets/" ^ Movement.piece_square_ind row col ^ ".png"));
+    (GdkPixbuf.from_file ("assets/" ^ Movement.piece_at row col ^ ".png"));
   img
 
 let set_img location pix =
@@ -90,10 +89,10 @@ let promote_pawn color =
       ignore
         (button#connect#clicked ~callback:(fun () ->
              result := color ^ "_" ^ p;
-             dialog#response `DELETE_EVENT)))
+             dialog#response `ACCEPT;
+             dialog#destroy ())))
     pieces;
   ignore (dialog#run ());
-
   dialog#destroy ();
   print_endline "Done";
   !result
@@ -109,7 +108,7 @@ let create_square row col =
         (* if the move from the previous square to the clicked square is
            valid *)
         if Movement.valid_move prev.row prev.col row col then
-          let piece = Movement.piece_square_ind prev.row prev.col in
+          let piece = Movement.piece_at prev.row prev.col in
 
           (**********PROMOTION*********)
           if (piece = "W_Pawn" && row = 0) || (piece = "B_Pawn" && row = 7) then (
