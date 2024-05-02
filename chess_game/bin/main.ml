@@ -87,6 +87,30 @@ let rec update_tab (cap_pieces : GMisc.image array) lst n =
       cap_pieces.(n)#set_pixbuf img;
       update_tab cap_pieces t (n + 1)
 
+(** [promote_pawn] creates a dialog box that allows the user to choose which
+    piece to promote a pawn to. *)
+let promote_pawn color =
+  let dialog =
+    GWindow.dialog ~width:200 ~height:200 ~title:"Promote Pawn" ~modal:true ()
+  in
+  let vbox = GPack.vbox ~packing:dialog#vbox#add () in
+  let pieces = [ "Queen"; "Rook"; "Bishop"; "Knight" ] in
+  let result = ref (color ^ "_Queen") in
+  (* Default to Queen *)
+  List.iter
+    (fun p ->
+      let button = GButton.button ~label:p ~packing:vbox#add () in
+      ignore
+        (button#connect#clicked ~callback:(fun () ->
+             result := color ^ "_" ^ p;
+             dialog#response `ACCEPT;
+             dialog#destroy ())))
+    pieces;
+  ignore (dialog#run ());
+  dialog#destroy ();
+  print_endline "Done";
+  !result
+
 (**[create_chessboard_window] creates a window with a standard chess board setup*)
 let create_chessboard_window () =
   let window = GWindow.window ~width ~height ~title:"Board" () in
@@ -135,28 +159,45 @@ let create_chessboard_window () =
     button#misc#modify_bg [ (`NORMAL, color) ];
     ignore
       (button#connect#clicked ~callback:(fun () ->
+           let piece = piece_square prev.row prev.col in
            (* If prev square is a piece *)
            if
              piece_square prev.row prev.col <> ""
-             && Movement.play_move
-                  (piece_square prev.row prev.col)
-                  prev.row prev.col row col state
-           then (
-             (*Update captures, if necessary, and update the table*)
-             Movement.update_captures row col state;
-             update_tab captured_B !Movement.captured_B 0;
-             update_tab captured_W !Movement.captured_W 0;
-             (* Then set new piece at new square *)
-             ignore
-               (GMisc.image
-                  ~pixbuf:(set_square_img prev.row prev.col)
-                  ~packing:button#set_image ());
-             (* Change prev piece to blank *)
-             ignore
-               (GMisc.image ~packing:buttons.(prev.row).(prev.col)#set_image ());
-             (* move prev piece to new location *)
-             state.(row).(col) <- state.(prev.row).(prev.col);
-             state.(prev.row).(prev.col) <- None)
+             && Movement.play_move piece prev.row prev.col row col state
+           then
+             if (piece = "W_Pawn" && row = 0) || (piece = "B_Pawn" && row = 7)
+             then (
+               let new_piece = promote_pawn (String.sub piece 0 1) in
+               state.(prev.row).(prev.col) <- Some new_piece;
+               Movement.update_captures row col state;
+               update_tab captured_B !Movement.captured_B 0;
+               update_tab captured_W !Movement.captured_W 0;
+               ignore
+                 (GMisc.image
+                    ~pixbuf:(set_square_img prev.row prev.col)
+                    ~packing:button#set_image ());
+               ignore
+                 (GMisc.image ~packing:buttons.(prev.row).(prev.col)#set_image
+                    ());
+               state.(row).(col) <- state.(prev.row).(prev.col);
+               state.(prev.row).(prev.col) <- None)
+             else (
+               (*Update captures, if necessary, and update the table*)
+               Movement.update_captures row col state;
+               update_tab captured_B !Movement.captured_B 0;
+               update_tab captured_W !Movement.captured_W 0;
+               (* Then set new piece at new square *)
+               ignore
+                 (GMisc.image
+                    ~pixbuf:(set_square_img prev.row prev.col)
+                    ~packing:button#set_image ());
+               (* Change prev piece to blank *)
+               ignore
+                 (GMisc.image ~packing:buttons.(prev.row).(prev.col)#set_image
+                    ());
+               (* move prev piece to new location *)
+               state.(row).(col) <- state.(prev.row).(prev.col);
+               state.(prev.row).(prev.col) <- None)
            else if
              (piece_square prev.row prev.col = "B_King"
              || piece_square prev.row prev.col = "W_King")
