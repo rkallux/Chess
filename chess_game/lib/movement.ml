@@ -257,7 +257,6 @@ let in_check state =
 let play_move piece start_row start_col end_row end_col state =
   (*only a valid move if the correct player is moving a piece and is not landing
     on a square occupied by one of that player's pieces*)
-  print_endline "play move";
   if String.sub piece 0 1 <> !turn || same_color piece end_row end_col state
   then false
     (* else if in_check state then ( print_endline "in check"; false) *)
