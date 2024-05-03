@@ -114,8 +114,7 @@ let promote_pawn color =
       ignore
         (button#connect#clicked ~callback:(fun () ->
              result := color ^ "_" ^ p;
-             dialog#response `ACCEPT;
-             dialog#destroy ())))
+             dialog#response `DELETE_EVENT)))
     pieces;
   ignore (dialog#run ());
   dialog#destroy ();
