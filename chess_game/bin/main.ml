@@ -50,6 +50,31 @@ let castle_gui (button : GButton.button) prev_row prev_col row col =
   | "bqsc" -> perform_castle button 0 2 0 3
   | _ -> failwith "Should never reach this case"
 
+let en_passant_gui (button : GButton.button) prev_row prev_col row col =
+  let perform_en_passant (button : GButton.button) pr pc er ec =
+    (* pr, pc are the previous row and col; er, ec are the end row and col *)
+    let captured_pawn_col = if pc > ec then pc - 1 else pc + 1 in
+    let captured_pawn_row = pr in
+
+    (* The pawn remains on the same row *)
+
+    (* Update the GUI: remove the captured pawn image *)
+    rm_img buttons.(captured_pawn_row).(captured_pawn_col);
+
+    (* Move the pawn on the board and GUI *)
+    set_img button (gen_pixbuf pr pc);
+    rm_img buttons.(pr).(pc);
+
+    (* Update internal game state *)
+    Movement.update_state pr pc er ec;
+    Movement.update_captures er captured_pawn_col
+    (* Update captures for en passant *)
+  in
+
+  if Movement.is_enpassant prev_row prev_col row col then
+    perform_en_passant button prev_row prev_col row col
+  else failwith "Invalid en passant attempt"
+
 (**[captured_W_img] stores the images of captured white pieces*)
 let captured_W_img = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
 
@@ -122,6 +147,8 @@ let create_square row col =
             (**********PROMOTION********))
           else if Movement.is_valid_castle prev.row prev.col row col then
             castle_gui button prev.row prev.col row col
+          else if Movement.is_enpassant prev.row prev.col row col then
+            en_passant_gui button prev.row prev.col row col
           else (
             (* regular move or capture *)
 

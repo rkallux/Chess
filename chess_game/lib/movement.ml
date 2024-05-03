@@ -21,6 +21,9 @@ let state =
     |];
   |]
 
+(* Top of the file: define the structure to store the last move's details *)
+let last_move = ref ("", (-1, -1), (-1, -1), false)
+
 (**[piece_at r c] is the type of piece at row [r] and column [c]. Returns [""]
    if no piece is present*)
 let piece_at row col =
@@ -28,9 +31,39 @@ let piece_at row col =
   | Some piece -> piece
   | None -> ""
 
+let is_enpassant pr pc er ec =
+  let last_piece, (last_pr, last_pc), (last_er, _), was_two_square_move =
+    !last_move
+  in
+  let piece = piece_at pr pc in
+  (* Check if the current move's piece is a pawn moving diagonally to an empty
+     square *)
+  piece.[2] = 'P'
+  && state.(er).(ec) = None
+  && abs (pr - er) = 1
+  && abs (pc - ec) = 1
+  (* Check if the last move was a pawn moving two squares directly ahead of the
+     current piece's end square *)
+  && was_two_square_move
+  && abs (last_pr - last_er) = 2
+  && last_pc = ec
+  && (* Ensure the pawns are different colors *)
+  piece.[0] <> last_piece.[0]
+
 let update_state pr pc er ec =
+  let piece = piece_at pr pc in
+  let is_two_square_move =
+    (piece = "W_Pawn" || piece = "B_Pawn") && abs (pr - er) = 2
+  in
   state.(er).(ec) <- state.(pr).(pc);
-  state.(pr).(pc) <- None
+  state.(pr).(pc) <- None;
+  last_move := (piece, (pr, pc), (er, ec), is_two_square_move);
+  (* Handle en passant capture *)
+  if abs (pr - er) = 1 && abs (pc - ec) = 1 && piece.[2] = 'P' then
+    match !last_move with
+    | _, (_, prev_col), _, true when prev_col = ec ->
+        state.(pr).(ec) <- None (* Clear the captured pawn due to en passant *)
+    | _ -> ()
 
 let has_piece row col = piece_at row col <> ""
 
@@ -151,24 +184,25 @@ let is_valid_king_move start_row start_col end_row end_col =
     diagonally. *)
 let is_valid_pawn_move piece start_row start_col end_row end_col =
   let forward = if piece = "W_Pawn" then -1 else 1 in
-  (* white pawns move up, black pawns move down *)
-  let start_rank = if piece = "W_Pawn" then 6 else 1 in
-  (* initial row from which pawns can first move 2 steps *)
+  let en_passant_row = if piece = "W_Pawn" then 3 else 4 in
+  let is_two_square_move = ref false in
+  let pawn_initial_row = if piece = "W_Pawn" then 6 else 1 in
   match (end_row - start_row, end_col - start_col) with
-  | r, 0 when r = forward ->
-      state.(end_row).(end_col)
-      = None (* move forward one square, end square must be empty *)
-  | r, 0 when r = 2 * forward && start_row = start_rank ->
-      state.(start_row + forward).(start_col)
-      = None (* square in front of pawn is None *)
-      && state.(end_row).(end_col) = None
-      (* square 2 steps ahead is none *)
-      (* initial two-square move, end square must be empty *)
-      (* TODO: only should run once per pawn *)
-  | r, c when r = forward && abs c = 1 ->
-      state.(end_row).(end_col) <> None
-      (* capture diagonally *)
-      (* TODO: should check that end square is an opposing color *)
+  | r, 0 when r = forward && state.(end_row).(end_col) = None -> true
+  | r, 0
+    when r = 2 * forward
+         && start_row = pawn_initial_row
+         && state.(start_row + forward).(start_col) = None
+         && state.(end_row).(end_col) = None ->
+      is_two_square_move := true;
+      true
+  | r, c when r = forward && abs c = 1 && state.(end_row).(end_col) <> None ->
+      true
+  | r, c when r = forward && abs c = 1 && start_row = en_passant_row -> (
+      match !last_move with
+      | "W_Pawn", (_, prev_col), _, true when prev_col = end_col -> true
+      | "B_Pawn", (_, prev_col), _, true when prev_col = end_col -> true
+      | _ -> false)
   | _ -> false
 
 let is_valid_move piece start_row start_col end_row end_col =

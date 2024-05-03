@@ -54,3 +54,5 @@ val update_state : int -> int -> int -> int -> unit
 (**[has_piece row col] is true if there is a piece at [(row, col)] and false
    otherwise*)
 val has_piece : int -> int -> bool
+
+val is_enpassant : int -> int -> int -> int -> bool
