@@ -31,9 +31,9 @@ let set_img location pix =
 
 let rm_img location = ignore (GMisc.image ~packing:location#set_image ())
 
-(**[castle_gui color king_end rook_start rook_end] updates the gui to perform a
+(**[castle color king_end rook_start rook_end] updates the gui to perform a
    castle*)
-let castle_gui (button : GButton.button) prev_row prev_col row col =
+let castle (button : GButton.button) prev_row prev_col row col =
   let perform_castle (button : GButton.button) c ke rs re =
     (* color, king end, rook start, rook end*)
     set_img button (gen_pixbuf prev.row prev.col);
@@ -121,7 +121,8 @@ let create_square row col =
             Movement.update_state prev.row prev.col row col
             (**********PROMOTION********))
           else if Movement.is_valid_castle prev.row prev.col row col then
-            castle_gui button prev.row prev.col row col
+            (* updates gui and state *)
+            castle button prev.row prev.col row col
           else (
             (* regular move or capture *)
 
