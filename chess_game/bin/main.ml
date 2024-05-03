@@ -50,11 +50,41 @@ let castle (button : GButton.button) prev_row prev_col row col =
   | "bqsc" -> perform_castle button 0 2 0 3
   | _ -> failwith "Should never reach this case"
 
+let en_passant_gui (button : GButton.button) prev_row prev_col row col =
+  let perform_en_passant (button : GButton.button) pr pc er ec =
+    (* pr, pc are the previous row and col; er, ec are the end row and col *)
+    let captured_pawn_col = if pc > ec then pc - 1 else pc + 1 in
+    let captured_pawn_row = pr in
+
+    (* The pawn remains on the same row *)
+
+    (* Update the GUI: remove the captured pawn image *)
+    rm_img buttons.(captured_pawn_row).(captured_pawn_col);
+
+    (* Move the pawn on the board and GUI *)
+    set_img button (gen_pixbuf pr pc);
+    rm_img buttons.(pr).(pc);
+
+    (* Update internal game state *)
+    Movement.update_state pr pc er ec;
+    Movement.update_captures er captured_pawn_col
+    (* Update captures for en passant *)
+  in
+
+  if Movement.is_enpassant prev_row prev_col row col then
+    perform_en_passant button prev_row prev_col row col
+  else failwith "Invalid en passant attempt"
+
 (**[captured_W_img] stores the images of captured white pieces*)
 let captured_W_img = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
 
 (**[captured_W_img] stores the images of captured black pieces*)
 let captured_B_img = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
+
+let buffB = GText.buffer ~text:"" ()
+let vB = GText.view ~buffer:buffB ~editable:false ~cursor_visible:false ()
+let buffW = GText.buffer ~text:"" ()
+let vW = GText.view ~buffer:buffW ~editable:false ~cursor_visible:false ()
 
 (**[update_captures captured_images captures pos] updates the gui to reflect the
    captured pieces in [captures]*)
@@ -71,7 +101,19 @@ let update_captures_gui () =
         update_cap_gui captured_img t (n + 1)
   in
   update_cap_gui captured_B_img !Movement.captured_B 0;
-  update_cap_gui captured_W_img !Movement.captured_W 0
+  update_cap_gui captured_W_img !Movement.captured_W 0;
+  let adv = Movement.material_advantage () in
+  match fst adv with
+  | "same" ->
+      buffW#set_text "";
+      buffB#set_text ""
+  | "B" ->
+      buffB#set_text ("+" ^ (adv |> snd |> string_of_int));
+      buffW#set_text ""
+  | "W" ->
+      buffW#set_text ("+" ^ (adv |> snd |> string_of_int));
+      buffB#set_text ""
+  | _ -> ()
 
 (** [promote_pawn] creates a dialog box that allows the user to choose which
     piece to promote a pawn to. *)
@@ -89,8 +131,7 @@ let promote_pawn color =
       ignore
         (button#connect#clicked ~callback:(fun () ->
              result := color ^ "_" ^ p;
-             dialog#response `ACCEPT;
-             dialog#destroy ())))
+             dialog#response `DELETE_EVENT)))
     pieces;
   ignore (dialog#run ());
   dialog#destroy ();
@@ -123,6 +164,8 @@ let create_square row col =
           else if Movement.is_valid_castle prev.row prev.col row col then
             (* updates gui and state *)
             castle button prev.row prev.col row col
+          else if Movement.is_enpassant prev.row prev.col row col then
+            en_passant_gui button prev.row prev.col row col
           else (
             (* regular move or capture *)
 
@@ -158,26 +201,28 @@ let create_chessboard_window () =
 
   (* Table for chessbaord *)
   let tableB =
-    GPack.table ~rows:1 ~columns:15 ~homogeneous:true ~packing:vbox#add ()
+    GPack.table ~rows:1 ~columns:16 ~homogeneous:true ~packing:vbox#add ()
   in
   for cap_p = 0 to 14 do
     let image = GMisc.image ~width:10 ~height:100 () in
     tableB#attach ~left:cap_p ~top:0 ~expand:`BOTH ~fill:`BOTH image#coerce;
     captured_B_img.(cap_p) <- image
   done;
+  tableB#attach ~left:15 ~top:0 vB#coerce;
 
   let table =
     GPack.table ~rows:8 ~columns:8 ~homogeneous:true ~packing:vbox#add ()
   in
 
   let tableW =
-    GPack.table ~rows:1 ~columns:15 ~homogeneous:true ~packing:vbox#add ()
+    GPack.table ~rows:1 ~columns:16 ~homogeneous:true ~packing:vbox#add ()
   in
   for cap_p = 0 to 14 do
     let image = GMisc.image ~width:10 ~height:100 () in
     tableW#attach ~left:cap_p ~top:0 ~expand:`BOTH ~fill:`BOTH image#coerce;
     captured_W_img.(cap_p) <- image
   done;
+  tableW#attach ~left:15 ~top:0 vW#coerce;
 
   (* attach buttons to each square in table *)
   for row = 0 to 7 do
