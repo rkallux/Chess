@@ -213,8 +213,7 @@ let create_chessboard_window () =
            else if
              (piece_square prev.row prev.col = "B_King"
              || piece_square prev.row prev.col = "W_King")
-             && Movement.is_valid_castle Movement.curr_state prev.row prev.col
-                  row col
+             && Movement.is_valid_castle prev.row prev.col row col
            then
              match Movement.type_castle prev.row prev.col row col with
              | "wksc" -> do_castle button 7 6 7 5

@@ -8,8 +8,7 @@ val valid_move : string option array array -> int -> int -> int -> int -> bool
 
 (** [is_valid_castle state start_row start_col end_row end_col state] is true if
     player inputs a valid castle. *)
-val is_valid_castle :
-  string option array array -> int -> int -> int -> int -> bool
+val is_valid_castle : int -> int -> int -> int -> bool
 
 (** [type_castle start_row start_col end_row end_col] is the string
     representation of what type of castle was made. For example "wksc" stands

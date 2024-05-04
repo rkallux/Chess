@@ -326,23 +326,37 @@ let update_rook_moved r c =
   | 0, 0 -> has_moved.(3) <- true (* Black queenside rook has moved *)
   | _ -> ()
 
-let checks_for_castle state a b c d =
+let checks_for_castle a b c d =
   (* a, b, c, d are just factored out variables (not especially meaningful) *)
-  state.(a).(b) = None
-  && state.(a).(c) = None
+  curr_state.(a).(b) = None
+  && curr_state.(a).(c) = None
   && (!turn = if a = 7 then "W" else "B")
   && (not has_moved.(if a = 7 then 4 else 5))
   && not has_moved.(d)
 
-let is_valid_castle state start_row start_col end_row end_col =
-  let piece = piece_at state start_row start_col in
-  if not (piece = "B_King" || piece = "W_King" || in_check state) then false
+let is_valid_castle start_row start_col end_row end_col =
+  let piece = piece_at curr_state start_row start_col in
+  if not (piece = "B_King" || piece = "W_King") then false
   else
     match (start_row, start_col, end_row, end_col) with
-    | 7, 4, 7, 6 -> checks_for_castle state 7 5 6 0
-    | 7, 4, 7, 2 -> state.(7).(1) = None && checks_for_castle state 7 2 3 1
-    | 0, 4, 0, 6 -> checks_for_castle state 0 5 6 2
-    | 0, 4, 0, 2 -> state.(0).(1) = None && checks_for_castle state 0 2 3 3
+    | 7, 4, 7, 6 ->
+        checks_for_castle 7 5 6 0
+        && (not (List.mem (7, 5) (valid_b_moves curr_state)))
+        && not (List.mem (7, 6) (valid_b_moves curr_state))
+    | 7, 4, 7, 2 ->
+        curr_state.(7).(1) = None
+        && checks_for_castle 7 2 3 1
+        && (not (List.mem (7, 2) (valid_b_moves curr_state)))
+        && not (List.mem (7, 3) (valid_b_moves curr_state))
+    | 0, 4, 0, 6 ->
+        checks_for_castle 0 5 6 2
+        && (not (List.mem (0, 5) (valid_w_moves curr_state)))
+        && not (List.mem (0, 6) (valid_w_moves curr_state))
+    | 0, 4, 0, 2 ->
+        curr_state.(0).(1) = None
+        && checks_for_castle 0 2 3 3
+        && (not (List.mem (0, 2) (valid_w_moves curr_state)))
+        && not (List.mem (0, 3) (valid_w_moves curr_state))
     | _ -> false
 
 let type_castle start_row start_col end_row end_col =
