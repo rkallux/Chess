@@ -5,6 +5,8 @@ val curr_state : string option array array
     does not account for checks*)
 val valid_move : string option array array -> int -> int -> int -> int -> bool
 
+val update_enpassant_captured_state : int -> int -> unit
+
 (** [is_valid_castle start_row start_col end_row end_col state] is true if
     player inputs a valid castle. *)
 val is_valid_castle :

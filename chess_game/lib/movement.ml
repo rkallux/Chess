@@ -380,14 +380,12 @@ let valid_move state start_row start_col end_row end_col =
       landing on a square occupied by one of that player's pieces*)
     if String.sub piece 0 1 <> !turn || same_color state piece end_row end_col
     then false
-      (* else if in_check state then ( print_endline "in check"; false) *)
     else
       let piece = piece_at state start_row start_col in
       (*only a valid move if the correct player is moving a piece and is not
         landing on a square occupied by one of that player's pieces*)
       if String.sub piece 0 1 <> !turn || same_color state piece end_row end_col
       then false
-        (* else if in_check state then ( print_endline "in check"; false) *)
       else
         match piece with
         (*if a player makes a valid move, it is now the next player's turn*)
@@ -450,7 +448,6 @@ let update_captures row col =
     | Some p -> (
         match p.[0] with
         | 'W' ->
-            print_endline "hi";
             captured_W :=
               List.sort
                 (fun p1 p2 -> material p1 - material p2)

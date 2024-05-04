@@ -110,11 +110,8 @@ let en_passant_gui (button : GButton.button) prev_row prev_col row col =
 
     (* Update internal game state *)
     Movement.update_state Movement.curr_state pr pc er ec;
-    update_captures_gui ();
-
+    update_captures_gui ()
     (* Update captures for en passant *)
-    print_endline (string_of_int er);
-    print_endline (string_of_int captured_pawn_col)
   in
 
   if Movement.is_enpassant prev_row prev_col row col then
@@ -141,7 +138,6 @@ let promote_pawn color =
     pieces;
   ignore (dialog#run ());
   dialog#destroy ();
-  print_endline "Done";
   !result
 
 (* Function to create a square *)
