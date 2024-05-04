@@ -23,7 +23,8 @@ let gen_pixbuf row col =
   let dim = 65 in
   let img = GdkPixbuf.create ~width:dim ~height:dim ~has_alpha:true () in
   GdkPixbuf.scale ~dest:img ~width:dim ~height:dim
-    (GdkPixbuf.from_file ("assets/" ^ Movement.piece_at row col ^ ".png"));
+    (GdkPixbuf.from_file
+       ("assets/" ^ Movement.piece_at Movement.curr_state row col ^ ".png"));
   img
 
 let set_img location pix =
@@ -40,7 +41,7 @@ let castle (button : GButton.button) prev_row prev_col row col =
     rm_img buttons.(prev.row).(prev.col);
     set_img buttons.(c).(re) (gen_pixbuf c rs);
     rm_img buttons.(c).(rs);
-    Movement.castle_state c ke rs re
+    Movement.castle_state Movement.curr_state c ke rs re
   in
 
   match Movement.type_castle prev_row prev_col row col with
@@ -66,7 +67,7 @@ let en_passant_gui (button : GButton.button) prev_row prev_col row col =
     rm_img buttons.(pr).(pc);
 
     (* Update internal game state *)
-    Movement.update_state pr pc er ec;
+    Movement.update_state Movement.curr_state pr pc er ec;
     Movement.update_captures er captured_pawn_col
     (* Update captures for en passant *)
   in
@@ -141,15 +142,17 @@ let promote_pawn color =
 (* Function to create a square *)
 let create_square row col =
   let button = GButton.button ~label:"" () in
-  if Movement.has_piece row col then set_img button (gen_pixbuf row col);
+  if Movement.has_piece Movement.curr_state row col then
+    set_img button (gen_pixbuf row col);
   let color = if (row + col) mod 2 = 0 then `NAME "white" else `NAME "green" in
   button#misc#modify_bg [ (`NORMAL, color) ];
   let _ =
     button#connect#clicked ~callback:(fun () ->
         (* if the move from the previous square to the clicked square is
            valid *)
-        if Movement.valid_move prev.row prev.col row col then
-          let piece = Movement.piece_at prev.row prev.col in
+        if Movement.valid_move Movement.curr_state prev.row prev.col row col
+        then
+          let piece = Movement.piece_at Movement.curr_state prev.row prev.col in
 
           (**********PROMOTION*********)
           if (piece = "W_Pawn" && row = 0) || (piece = "B_Pawn" && row = 7) then (
@@ -159,9 +162,12 @@ let create_square row col =
             update_captures_gui ();
             set_img button (gen_pixbuf prev.row prev.col);
             rm_img buttons.(prev.row).(prev.col);
-            Movement.update_state prev.row prev.col row col
+            Movement.update_state Movement.curr_state prev.row prev.col row col
             (**********PROMOTION********))
-          else if Movement.is_valid_castle prev.row prev.col row col then
+          else if
+            Movement.is_valid_castle Movement.curr_state prev.row prev.col row
+              col
+          then
             (* updates gui and state *)
             castle button prev.row prev.col row col
           else if Movement.is_enpassant prev.row prev.col row col then
@@ -178,7 +184,7 @@ let create_square row col =
             rm_img buttons.(prev.row).(prev.col);
 
             (* update state *)
-            Movement.update_state prev.row prev.col row col)
+            Movement.update_state Movement.curr_state prev.row prev.col row col)
         else (
           (* didn't click on a piece *)
           prev.row <- row;
