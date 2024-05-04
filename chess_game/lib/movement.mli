@@ -12,6 +12,10 @@ val is_valid_castle : int -> int -> int -> int -> bool
     for a white king side castle. *)
 val type_castle : int -> int -> int -> int -> string
 
+(**[castle_state color k rook_start rook_end] performs a castle for [color] on
+   the side matching the rook locations*)
+val castle_state : int -> int -> int -> int -> unit
+
 (**[turn] contains ["W"] if it is white to move and ["B"] if it is black to move*)
 val turn : string ref
 
@@ -39,10 +43,6 @@ val material_advantage : unit -> string * int
 (**[piece_at row col] is the name of the piece at [(row, col)] if there is a
    piece there and [""] otherwise*)
 val piece_at : int -> int -> string
-
-(**[castle_state color k rook_start rook_end] performs a castle for [color] on
-   the side matching the rook locations*)
-val castle_state : int -> int -> int -> int -> unit
 
 (**[promote row col piece] promotes the pawn at [(row,col)] to [piece]*)
 val promote : int -> int -> string -> unit

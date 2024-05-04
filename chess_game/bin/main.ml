@@ -31,9 +31,9 @@ let set_img location pix =
 
 let rm_img location = ignore (GMisc.image ~packing:location#set_image ())
 
-(**[castle_gui color king_end rook_start rook_end] updates the gui to perform a
+(**[castle color king_end rook_start rook_end] updates the gui to perform a
    castle*)
-let castle_gui (button : GButton.button) prev_row prev_col row col =
+let castle (button : GButton.button) prev_row prev_col row col =
   let perform_castle (button : GButton.button) c ke rs re =
     (* color, king end, rook start, rook end*)
     set_img button (gen_pixbuf prev.row prev.col);
@@ -56,6 +56,11 @@ let captured_W_img = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
 (**[captured_W_img] stores the images of captured black pieces*)
 let captured_B_img = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
 
+let buffB = GText.buffer ~text:"" ()
+let vB = GText.view ~buffer:buffB ~editable:false ~cursor_visible:false ()
+let buffW = GText.buffer ~text:"" ()
+let vW = GText.view ~buffer:buffW ~editable:false ~cursor_visible:false ()
+
 (**[update_captures captured_images captures pos] updates the gui to reflect the
    captured pieces in [captures]*)
 let update_captures_gui () =
@@ -71,7 +76,19 @@ let update_captures_gui () =
         update_cap_gui captured_img t (n + 1)
   in
   update_cap_gui captured_B_img !Movement.captured_B 0;
-  update_cap_gui captured_W_img !Movement.captured_W 0
+  update_cap_gui captured_W_img !Movement.captured_W 0;
+  let adv = Movement.material_advantage () in
+  match fst adv with
+  | "same" ->
+      buffW#set_text "";
+      buffB#set_text ""
+  | "B" ->
+      buffB#set_text ("+" ^ (adv |> snd |> string_of_int));
+      buffW#set_text ""
+  | "W" ->
+      buffW#set_text ("+" ^ (adv |> snd |> string_of_int));
+      buffB#set_text ""
+  | _ -> ()
 
 let en_passant_gui (button : GButton.button) prev_row prev_col row col =
   let perform_en_passant (button : GButton.button) pr pc er ec =
@@ -119,8 +136,7 @@ let promote_pawn color =
       ignore
         (button#connect#clicked ~callback:(fun () ->
              result := color ^ "_" ^ p;
-             dialog#response `ACCEPT;
-             dialog#destroy ())))
+             dialog#response `DELETE_EVENT)))
     pieces;
   ignore (dialog#run ());
   dialog#destroy ();
@@ -151,7 +167,8 @@ let create_square row col =
             Movement.update_state prev.row prev.col row col
             (**********PROMOTION********))
           else if Movement.is_valid_castle prev.row prev.col row col then
-            castle_gui button prev.row prev.col row col
+            (* updates gui and state *)
+            castle button prev.row prev.col row col
           else if Movement.is_enpassant prev.row prev.col row col then
             en_passant_gui button prev.row prev.col row col
           else (
@@ -189,26 +206,28 @@ let create_chessboard_window () =
 
   (* Table for chessbaord *)
   let tableB =
-    GPack.table ~rows:1 ~columns:15 ~homogeneous:true ~packing:vbox#add ()
+    GPack.table ~rows:1 ~columns:16 ~homogeneous:true ~packing:vbox#add ()
   in
   for cap_p = 0 to 14 do
     let image = GMisc.image ~width:10 ~height:100 () in
     tableB#attach ~left:cap_p ~top:0 ~expand:`BOTH ~fill:`BOTH image#coerce;
     captured_B_img.(cap_p) <- image
   done;
+  tableB#attach ~left:15 ~top:0 vB#coerce;
 
   let table =
     GPack.table ~rows:8 ~columns:8 ~homogeneous:true ~packing:vbox#add ()
   in
 
   let tableW =
-    GPack.table ~rows:1 ~columns:15 ~homogeneous:true ~packing:vbox#add ()
+    GPack.table ~rows:1 ~columns:16 ~homogeneous:true ~packing:vbox#add ()
   in
   for cap_p = 0 to 14 do
     let image = GMisc.image ~width:10 ~height:100 () in
     tableW#attach ~left:cap_p ~top:0 ~expand:`BOTH ~fill:`BOTH image#coerce;
     captured_W_img.(cap_p) <- image
   done;
+  tableW#attach ~left:15 ~top:0 vW#coerce;
 
   (* attach buttons to each square in table *)
   for row = 0 to 7 do
