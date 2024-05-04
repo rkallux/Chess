@@ -59,4 +59,9 @@ val update_state : string option array array -> int -> int -> int -> int -> unit
    otherwise*)
 val has_piece : string option array array -> int -> int -> bool
 
+(** [is_enpassant start_row start_col end_row end_col state] is true if player
+    inputs a valid enpassant. *)
 val is_enpassant : int -> int -> int -> int -> bool
+
+(**[update_enpassant_captured_state row col] removes the piece at [(row,col)] *)
+val update_enpassant_captured_state : int -> int -> unit

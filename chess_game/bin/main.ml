@@ -51,31 +51,6 @@ let castle (button : GButton.button) prev_row prev_col row col =
   | "bqsc" -> perform_castle button 0 2 0 3
   | _ -> failwith "Should never reach this case"
 
-let en_passant_gui (button : GButton.button) prev_row prev_col row col =
-  let perform_en_passant (button : GButton.button) pr pc er ec =
-    (* pr, pc are the previous row and col; er, ec are the end row and col *)
-    let captured_pawn_col = if pc > ec then pc - 1 else pc + 1 in
-    let captured_pawn_row = pr in
-
-    (* The pawn remains on the same row *)
-
-    (* Update the GUI: remove the captured pawn image *)
-    rm_img buttons.(captured_pawn_row).(captured_pawn_col);
-
-    (* Move the pawn on the board and GUI *)
-    set_img button (gen_pixbuf pr pc);
-    rm_img buttons.(pr).(pc);
-
-    (* Update internal game state *)
-    Movement.update_state Movement.curr_state pr pc er ec;
-    Movement.update_captures er captured_pawn_col
-    (* Update captures for en passant *)
-  in
-
-  if Movement.is_enpassant prev_row prev_col row col then
-    perform_en_passant button prev_row prev_col row col
-  else failwith "Invalid en passant attempt"
-
 (**[captured_W_img] stores the images of captured white pieces*)
 let captured_W_img = Array.make 15 (GMisc.image ~width:10 ~height:100 ())
 
@@ -115,6 +90,36 @@ let update_captures_gui () =
       buffW#set_text ("+" ^ (adv |> snd |> string_of_int));
       buffB#set_text ""
   | _ -> ()
+
+let en_passant_gui (button : GButton.button) prev_row prev_col row col =
+  let perform_en_passant (button : GButton.button) pr pc er ec =
+    (* pr, pc are the previous row and col; er, ec are the end row and col *)
+    let captured_pawn_col = if pc > ec then pc - 1 else pc + 1 in
+    let captured_pawn_row = pr in
+
+    (* The pawn remains on the same row *)
+
+    (* Update the GUI: remove the captured pawn image *)
+    rm_img buttons.(captured_pawn_row).(captured_pawn_col);
+
+    (* Move the pawn on the board and GUI *)
+    set_img button (gen_pixbuf pr pc);
+    rm_img buttons.(pr).(pc);
+    Movement.update_captures captured_pawn_row captured_pawn_col;
+    Movement.update_enpassant_captured_state captured_pawn_row captured_pawn_col;
+
+    (* Update internal game state *)
+    Movement.update_state Movement.curr_state pr pc er ec;
+    update_captures_gui ();
+
+    (* Update captures for en passant *)
+    print_endline (string_of_int er);
+    print_endline (string_of_int captured_pawn_col)
+  in
+
+  if Movement.is_enpassant prev_row prev_col row col then
+    perform_en_passant button prev_row prev_col row col
+  else failwith "Invalid en passant attempt"
 
 (** [promote_pawn] creates a dialog box that allows the user to choose which
     piece to promote a pawn to. *)
