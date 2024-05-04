@@ -152,7 +152,7 @@ let create_square row col =
         (* if the move from the previous square to the clicked square is
            valid *)
         if Movement.valid_move Movement.curr_state prev.row prev.col row col
-        then
+        then (
           let piece = Movement.piece_at Movement.curr_state prev.row prev.col in
 
           (**********PROMOTION*********)
@@ -185,7 +185,11 @@ let create_square row col =
             rm_img buttons.(prev.row).(prev.col);
 
             (* update state *)
-            Movement.update_state Movement.curr_state prev.row prev.col row col)
+            Movement.update_state Movement.curr_state prev.row prev.col row col);
+          (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********)
+          if Movement.checkmated Movement.curr_state then
+            print_endline "checkmated"
+            (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********))
         else (
           (* didn't click on a piece *)
           prev.row <- row;

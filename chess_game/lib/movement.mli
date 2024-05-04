@@ -1,3 +1,4 @@
+(** Current board state of the game. *)
 val curr_state : string option array array
 
 (** [valid_move  piece start_row start_col end_row end_col state] is true if the
@@ -5,9 +6,7 @@ val curr_state : string option array array
     does not account for checks*)
 val valid_move : string option array array -> int -> int -> int -> int -> bool
 
-val update_enpassant_captured_state : int -> int -> unit
-
-(** [is_valid_castle start_row start_col end_row end_col state] is true if
+(** [is_valid_castle state start_row start_col end_row end_col state] is true if
     player inputs a valid castle. *)
 val is_valid_castle :
   string option array array -> int -> int -> int -> int -> bool
@@ -21,7 +20,8 @@ val type_castle : int -> int -> int -> int -> string
    the side matching the rook locations*)
 val castle_state : string option array array -> int -> int -> int -> int -> unit
 
-(**[turn] contains ["W"] if it is white to move and ["B"] if it is black to move*)
+(** [turn] contains ["W"] if it is white to move and ["B"] if it is black to
+    move *)
 val turn : string ref
 
 (**[material piece] is the material value of [piece]*)
@@ -67,3 +67,5 @@ val is_enpassant : int -> int -> int -> int -> bool
 
 (**[update_enpassant_captured_state row col] removes the piece at [(row,col)] *)
 val update_enpassant_captured_state : int -> int -> unit
+
+val checkmated : string option array array -> bool
