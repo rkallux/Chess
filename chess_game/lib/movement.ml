@@ -50,6 +50,8 @@ let is_enpassant pr pc er ec =
   && (* Ensure the pawns are different colors *)
   piece.[0] <> last_piece.[0]
 
+let update_enpassant_captured_state r c = state.(r).(c) <- None
+
 let update_state pr pc er ec =
   let piece = piece_at pr pc in
   let is_two_square_move =
@@ -428,6 +430,7 @@ let update_captures row col =
     | Some p -> (
         match p.[0] with
         | 'W' ->
+            print_endline "hi";
             captured_W :=
               List.sort
                 (fun p1 p2 -> material p1 - material p2)
