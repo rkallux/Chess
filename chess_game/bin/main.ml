@@ -78,7 +78,7 @@ let update_captures_gui () =
   in
   update_cap_gui captured_B_img !Movement.captured_B 0;
   update_cap_gui captured_W_img !Movement.captured_W 0;
-  let adv = Movement.material_advantage () in
+  let adv = Movement.material_advantage in
   match fst adv with
   | "same" ->
       buffW#set_text "";

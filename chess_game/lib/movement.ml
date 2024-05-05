@@ -227,7 +227,6 @@ let is_valid_move state piece start_row start_col end_row end_col =
 (*---------------------------------------------------------------------*)
 (*---------------------------------------------------------------------*)
 (*---------------------------------------------------------------------*)
-(*---------------------------------------------------------------------*)
 
 (********************************* Checks ******************************)
 let board_list =
@@ -341,22 +340,26 @@ let is_valid_castle start_row start_col end_row end_col =
     match (start_row, start_col, end_row, end_col) with
     | 7, 4, 7, 6 ->
         checks_for_castle 7 5 6 0
+        && (not (List.mem (7, 4) (valid_b_moves curr_state)))
         && (not (List.mem (7, 5) (valid_b_moves curr_state)))
         && not (List.mem (7, 6) (valid_b_moves curr_state))
     | 7, 4, 7, 2 ->
         curr_state.(7).(1) = None
         && checks_for_castle 7 2 3 1
         && (not (List.mem (7, 2) (valid_b_moves curr_state)))
-        && not (List.mem (7, 3) (valid_b_moves curr_state))
+        && (not (List.mem (7, 3) (valid_b_moves curr_state)))
+        && not (List.mem (7, 4) (valid_b_moves curr_state))
     | 0, 4, 0, 6 ->
         checks_for_castle 0 5 6 2
+        && (not (List.mem (0, 4) (valid_w_moves curr_state)))
         && (not (List.mem (0, 5) (valid_w_moves curr_state)))
         && not (List.mem (0, 6) (valid_w_moves curr_state))
     | 0, 4, 0, 2 ->
         curr_state.(0).(1) = None
         && checks_for_castle 0 2 3 3
         && (not (List.mem (0, 2) (valid_w_moves curr_state)))
-        && not (List.mem (0, 3) (valid_w_moves curr_state))
+        && (not (List.mem (0, 3) (valid_w_moves curr_state)))
+        && not (List.mem (0, 4) (valid_w_moves curr_state))
     | _ -> false
 
 let type_castle start_row start_col end_row end_col =
@@ -390,17 +393,8 @@ let castle_state state c ke rs re =
 (*---------------------------------------------------------------------*)
 (*---------------------------------------------------------------------*)
 
-(*---------------------------------------------------------------------*)
-(*---------------------------------------------------------------------*)
-(*---------------------------------------------------------------------*)
-(************************** SQUARE BEING ATTACKED **********************)
-
 let promote row col piece = curr_state.(row).(col) <- Some piece
 
-(************************** SQUARE BEING ATTACKED **********************)
-(*---------------------------------------------------------------------*)
-(*---------------------------------------------------------------------*)
-(*---------------------------------------------------------------------*)
 let play_turn p =
   if p then (
     update_turn ();
@@ -498,11 +492,10 @@ let rec total_material captured =
   | [] -> 0
   | h :: t -> material h + total_material t
 
-(**[material_advantage ()] is a tuple whose first element is the color that has
-   the material advantage and whose second element is the value of the
-   advantage. returns [("same", 0)] if the two sides are equal in terms of
-   material*)
-let material_advantage () =
+(**[material_advantage] is a tuple whose first element is the color that has the
+   material advantage and whose second element is the value of the advantage.
+   returns [("same", 0)] if the two sides are equal in terms of material*)
+let material_advantage =
   let adv = abs (total_material !captured_B - total_material !captured_W) in
   if total_material !captured_B - total_material !captured_W = 0 then ("same", 0)
   else if total_material !captured_B - total_material !captured_W > 0 then
