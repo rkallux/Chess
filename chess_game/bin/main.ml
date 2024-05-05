@@ -151,8 +151,16 @@ let create_square row col =
     button#connect#clicked ~callback:(fun () ->
         (* if the move from the previous square to the clicked square is
            valid *)
-        if Movement.valid_move Movement.curr_state prev.row prev.col row col
-        then
+        if Movement.is_valid_castle prev.row prev.col row col then (
+          (* updates gui and state *)
+          castle button prev.row prev.col row col;
+          (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********)
+          if Movement.checkmated Movement.curr_state then
+            print_endline "checkmated"
+            (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********))
+        else if
+          Movement.valid_move Movement.curr_state prev.row prev.col row col
+        then (
           let piece = Movement.piece_at Movement.curr_state prev.row prev.col in
 
           (**********PROMOTION*********)
@@ -165,17 +173,10 @@ let create_square row col =
             rm_img buttons.(prev.row).(prev.col);
             Movement.update_state Movement.curr_state prev.row prev.col row col
             (**********PROMOTION********))
-          else if
-            Movement.is_valid_castle Movement.curr_state prev.row prev.col row
-              col
-          then
-            (* updates gui and state *)
-            castle button prev.row prev.col row col
           else if Movement.is_enpassant prev.row prev.col row col then
             en_passant_gui button prev.row prev.col row col
           else (
             (* regular move or capture *)
-
             (* update captures table, if necessary*)
             Movement.update_captures row col;
             update_captures_gui ();
@@ -185,7 +186,11 @@ let create_square row col =
             rm_img buttons.(prev.row).(prev.col);
 
             (* update state *)
-            Movement.update_state Movement.curr_state prev.row prev.col row col)
+            Movement.update_state Movement.curr_state prev.row prev.col row col);
+          (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********)
+          if Movement.checkmated Movement.curr_state then
+            print_endline "checkmated"
+            (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********))
         else (
           (* didn't click on a piece *)
           prev.row <- row;
