@@ -61,6 +61,11 @@ val is_valid_king_move : int -> int -> int -> int -> bool
 val is_valid_pawn_move :
   string option array array -> string -> int -> int -> int -> int -> bool
 
+(** [is_valid_move state piece start_row start_col end_row end_col] is true if
+    [piece] on square [start_row], [start_col] can move to [end_row], [end_col] *)
+val is_valid_move :
+  string option array array -> string -> int -> int -> int -> int -> bool
+
 (** [valid_b_moves state] is the list of all valid black moves during [state].
     Where valid does not include checks. *)
 val valid_b_moves : string option array array -> (int * int) list
