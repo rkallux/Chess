@@ -19,7 +19,7 @@ let test_pawn_invalid_move _ =
   board.(6).(0) <- Some "W_Pawn";
   assert_equal false
     (is_valid_pawn_move board "W_Pawn" 6 0 3 0)
-    ~msg:"Pawn should move forward one square"
+    ~msg:"Pawn cannot move 3 spaces"
 
 let test_pawn_capture_move _ =
   let board = empty_board () in
