@@ -33,7 +33,7 @@ let piece_at state row col =
   | Some piece -> piece
   | None -> ""
 
-let is_enpassant pr pc er ec =
+let is_enpassant curr_state pr pc er ec =
   let last_piece, (last_pr, last_pc), (last_er, _), was_two_square_move =
     !last_move
   in
@@ -52,7 +52,7 @@ let is_enpassant pr pc er ec =
   && (* Ensure the pawns are different colors *)
   piece.[0] <> last_piece.[0]
 
-let update_enpassant_captured_state r c = curr_state.(r).(c) <- None
+let update_enpassant_captured_state curr_state r c = curr_state.(r).(c) <- None
 let past_states = ref []
 
 let print_array arr =
@@ -407,7 +407,7 @@ let checks_for_castle a b c d =
   && (not has_moved.(if a = 7 then 4 else 5))
   && not has_moved.(d)
 
-let is_valid_castle start_row start_col end_row end_col =
+let is_valid_castle curr_state start_row start_col end_row end_col =
   let piece = piece_at curr_state start_row start_col in
   if not (piece = "B_King" || piece = "W_King") then false
   else
@@ -548,7 +548,7 @@ let captured_B = ref []
 
 (**[update_captures row col] adds the piece at row [row] and column [col] into
    [captured_W] if it is a white piece and [captured_B] if it is black*)
-let update_captures row col =
+let update_captures curr_state row col =
   if curr_state.(row).(col) = None then ()
   else
     let _ = last_pawn_or_capture := 0 in

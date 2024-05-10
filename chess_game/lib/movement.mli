@@ -21,9 +21,9 @@ val piece_at : string option array array -> int -> int -> string
     move made by a player is legal. Does not account for castling. *)
 val valid_move : string option array array -> int -> int -> int -> int -> bool
 
-(** [is_enpassant s_row s_col e_row e_col] is true if the squares clicked is a
-    legal en passant move. *)
-val is_enpassant : int -> int -> int -> int -> bool
+(** [is_enpassant state s_row s_col e_row e_col] is true if the squares clicked
+    is a legal en passant move. *)
+val is_enpassant : string option array array -> int -> int -> int -> int -> bool
 
 (** [has_piece state row col] is true if there is a piece on [row], [col] and
     false otherwise. *)
@@ -82,9 +82,10 @@ val in_check : string option array array -> bool
     false otherwise. *)
 val checkmated : string option array array -> bool
 
-(** [is_valid_castle s_row s_col e_row e_col] is true if the player has clicked
-    on two legal squares for castling. *)
-val is_valid_castle : int -> int -> int -> int -> bool
+(** [is_valid_castle state s_row s_col e_row e_col] is true if the player has
+    clicked on two legal squares for castling. *)
+val is_valid_castle :
+  string option array array -> int -> int -> int -> int -> bool
 
 (** [type_castle s_row s_col e_row e_col] is the string representation of what
     castle is being made. *)
@@ -104,7 +105,7 @@ val update_state : string option array array -> int -> int -> int -> int -> unit
 
 (** Captures a piece at a specific board position and updates the array of
     captured pieces *)
-val update_captures : int -> int -> unit
+val update_captures : string option array array -> int -> int -> unit
 
 (** Updates the turn to the next player *)
 val update_turn : unit -> unit
@@ -113,6 +114,7 @@ val update_turn : unit -> unit
 val promote : int -> int -> string -> unit
 
 (** Updates the state to reflect the captured pawn during an en passant *)
-val update_enpassant_captured_state : int -> int -> unit
+val update_enpassant_captured_state :
+  string option array array -> int -> int -> unit
 
 val is_draw : string option array array -> string

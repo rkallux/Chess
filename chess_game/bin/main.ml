@@ -105,8 +105,10 @@ let en_passant_gui (button : GButton.button) prev_row prev_col row col =
     (* Move the pawn on the board and GUI *)
     set_img button (gen_pixbuf pr pc);
     rm_img buttons.(pr).(pc);
-    Movement.update_captures captured_pawn_row captured_pawn_col;
-    Movement.update_enpassant_captured_state captured_pawn_row captured_pawn_col;
+    Movement.update_captures Movement.curr_state captured_pawn_row
+      captured_pawn_col;
+    Movement.update_enpassant_captured_state Movement.curr_state
+      captured_pawn_row captured_pawn_col;
 
     (* Update internal game state *)
     Movement.update_state Movement.curr_state pr pc er ec;
@@ -114,7 +116,7 @@ let en_passant_gui (button : GButton.button) prev_row prev_col row col =
     (* Update captures for en passant *)
   in
 
-  if Movement.is_enpassant prev_row prev_col row col then
+  if Movement.is_enpassant Movement.curr_state prev_row prev_col row col then
     perform_en_passant button prev_row prev_col row col
   else failwith "Invalid en passant attempt"
 
@@ -151,7 +153,9 @@ let create_square row col =
     button#connect#clicked ~callback:(fun () ->
         (* if the move from the previous square to the clicked square is
            valid *)
-        if Movement.is_valid_castle prev.row prev.col row col then (
+        if
+          Movement.is_valid_castle Movement.curr_state prev.row prev.col row col
+        then (
           (* updates gui and state *)
           castle button prev.row prev.col row col;
           (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********)
@@ -167,18 +171,19 @@ let create_square row col =
           if (piece = "W_Pawn" && row = 0) || (piece = "B_Pawn" && row = 7) then (
             let new_piece = promote_pawn (String.sub piece 0 1) in
             Movement.promote prev.row prev.col new_piece;
-            Movement.update_captures row col;
+            Movement.update_captures Movement.curr_state row col;
             update_captures_gui ();
             set_img button (gen_pixbuf prev.row prev.col);
             rm_img buttons.(prev.row).(prev.col);
             Movement.update_state Movement.curr_state prev.row prev.col row col
             (**********PROMOTION********))
-          else if Movement.is_enpassant prev.row prev.col row col then
-            en_passant_gui button prev.row prev.col row col
+          else if
+            Movement.is_enpassant Movement.curr_state prev.row prev.col row col
+          then en_passant_gui button prev.row prev.col row col
           else (
             (* regular move or capture *)
             (* update captures table, if necessary*)
-            Movement.update_captures row col;
+            Movement.update_captures Movement.curr_state row col;
             update_captures_gui ();
 
             (* Then set new piece at new square and remove old image*)
