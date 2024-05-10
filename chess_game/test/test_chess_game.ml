@@ -363,6 +363,47 @@ let test_unrecognized_piece _ =
   assert_bool "Unrecognized piece type should return false"
     (not (is_valid_move board "W_Zebra" 0 0 3 0))
 
+let test_material_values _ =
+  let pieces =
+    [ "W_Pawn"; "W_Rook"; "W_Bishop"; "W_Knight"; "W_Queen"; "W_King" ]
+  in
+  let expected_values = [ 1; 5; 3; 3; 9; 0 ] in
+  List.iter2
+    (fun piece expected_value ->
+      let result = material piece in
+      assert_equal expected_value result ~printer:string_of_int)
+    pieces expected_values
+
+let test_material_pawn _ =
+  assert_equal 1 (material "B_Pawn") ~printer:string_of_int;
+  assert_equal 1 (material "W_Pawn") ~printer:string_of_int
+
+let test_material_rook _ =
+  assert_equal 5 (material "B_Rook") ~printer:string_of_int;
+  assert_equal 5 (material "W_Rook") ~printer:string_of_int
+
+let test_material_bishop _ =
+  assert_equal 3 (material "B_Bishop") ~printer:string_of_int;
+  assert_equal 3 (material "W_Bishop") ~printer:string_of_int
+
+let test_material_knight _ =
+  assert_equal 3 (material "B_Knight") ~printer:string_of_int;
+  assert_equal 3 (material "W_Knight") ~printer:string_of_int
+
+let test_material_queen _ =
+  assert_equal 9 (material "B_Queen") ~printer:string_of_int;
+  assert_equal 9 (material "W_Queen") ~printer:string_of_int
+
+let test_material_unexpected _ =
+  assert_equal 0 (material "B_King") ~printer:string_of_int;
+  assert_equal 0 (material "W_King") ~printer:string_of_int
+
+let test_material_unexpected_characters _ =
+  assert_equal 0 (material "W_Zebra") ~printer:string_of_int
+
+let test_material_partial_input _ =
+  assert_equal 0 (material "Pawn") ~printer:string_of_int
+
 let suite =
   "Chess Game Tests"
   >::: [
@@ -403,6 +444,16 @@ let suite =
          "test_invalid_same_color_block" >:: test_invalid_same_color_block;
          "test_invalid_piece_moves" >:: test_invalid_piece_moves;
          "test_unrecognized_piece" >:: test_unrecognized_piece;
+         "test_material_values" >:: test_material_values;
+         "test_material_pawn" >:: test_material_pawn;
+         "test_material_rook" >:: test_material_rook;
+         "test_material_bishop" >:: test_material_bishop;
+         "test_material_knight" >:: test_material_knight;
+         "test_material_queen" >:: test_material_queen;
+         "test_material_unexpected" >:: test_material_unexpected;
+         "test_material_unexpected_characters"
+         >:: test_material_unexpected_characters;
+         "test_material_partial_input" >:: test_material_partial_input;
        ]
 
 let () = run_test_tt_main suite
