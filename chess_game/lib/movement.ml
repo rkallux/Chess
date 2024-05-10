@@ -473,8 +473,6 @@ let play_turn p =
   if p then (
     update_turn ();
     add_state (Array.map Array.copy curr_state);
-    print_endline ("size: " ^ string_of_int (List.length !past_states));
-    print_past !past_states;
     last_pawn_or_capture := !last_pawn_or_capture + 1;
     true)
   else false
@@ -554,7 +552,7 @@ let update_captures row col =
   if curr_state.(row).(col) = None then ()
   else
     let _ = last_pawn_or_capture := 0 in
-    (* let _ = past_states := [] in *)
+    let _ = past_states := [] in
     match curr_state.(row).(col) with
     | Some p -> (
         match p.[0] with
