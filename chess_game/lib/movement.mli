@@ -6,7 +6,7 @@ val turn : string ref
 
 (** A tuple whose first element is the color that has the material advantage (is
     "same" if equal) and whose second element is the value of the advantage. *)
-val material_advantage : string * int
+val material_advantage : unit -> string * int
 
 (** The list of all captured white pieces *)
 val captured_W : string list ref
@@ -109,3 +109,5 @@ val promote : int -> int -> string -> unit
 
 (** Updates the state to reflect the captured pawn during an en passant *)
 val update_enpassant_captured_state : int -> int -> unit
+
+val is_draw : string option array array -> string

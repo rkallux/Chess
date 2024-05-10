@@ -53,6 +53,41 @@ let is_enpassant pr pc er ec =
   piece.[0] <> last_piece.[0]
 
 let update_enpassant_captured_state r c = curr_state.(r).(c) <- None
+let past_states = ref []
+
+let print_array arr =
+  for i = 0 to 7 do
+    for j = 0 to 7 do
+      print_string (piece_at arr i j ^ "")
+    done;
+    print_endline ""
+  done
+
+let rec print_past pst =
+  match pst with
+  | [] -> ()
+  | h :: t ->
+      print_array (fst h);
+      print_endline (snd h |> string_of_int);
+      print_past t
+
+let add_state pos =
+  let rec contains lst elem =
+    match lst with
+    | [] -> false
+    | h :: t -> if fst h = elem then true else contains t elem
+  in
+  if contains !past_states pos then
+    past_states :=
+      List.map
+        (fun (st, ct) -> if st = pos then (st, ct + 1) else (st, ct))
+        !past_states
+  else past_states := (pos, 1) :: !past_states
+
+let rec three_fold past =
+  match past with
+  | [] -> false
+  | h :: t -> if snd h = 3 then true else three_fold t
 
 let update_state state pr pc er ec =
   let piece = piece_at state pr pc in
@@ -94,6 +129,38 @@ let update_turn () =
   | "W" -> turn := "B"
   | "B" -> turn := "W"
   | _ -> failwith ""
+
+(**************END GAME***********)
+
+let last_pawn_or_capture = ref 0
+let fifty_move () = if !last_pawn_or_capture = 100 then true else false
+
+let insufficient_material state =
+  let remaining_b = ref [] in
+  let remaining_w = ref [] in
+  for i = 0 to 7 do
+    for j = 0 to 7 do
+      if
+        piece_at state i j = ""
+        || piece_at state i j = "B_King"
+        || piece_at state i j = "W_King"
+      then ()
+      else if String.sub (piece_at state i j) 0 1 = "W" then
+        remaining_w := piece_at state i j :: !remaining_w
+      else remaining_b := piece_at state i j :: !remaining_b
+    done
+  done;
+  if
+    (!remaining_b = [ "B_Knight" ]
+    || !remaining_b = [ "B_Bishop" ]
+    || !remaining_b = [])
+    && (!remaining_w = [ "W_Knight" ]
+       || !remaining_w = [ "W_Bishop" ]
+       || !remaining_w = [])
+  then true
+  else false
+
+(**************END GAME***********)
 
 (*------------------------------------------------------------------*)
 (*------------------------------------------------------------------*)
@@ -305,7 +372,14 @@ let legal_w_moves state =
     (valid_moves_aux piece_legal_moves state "W" [] 0 0)
 
 let checkmated state =
-  if !turn = "B" then legal_b_moves state = [] else legal_w_moves state = []
+  if not (in_check state) then false
+  else if !turn = "B" then legal_b_moves state = []
+  else legal_w_moves state = []
+
+let stalemated state =
+  if in_check state then false
+  else if !turn = "B" then legal_b_moves state = []
+  else legal_w_moves state = []
 
 (********************************* Checks ******************************)
 
@@ -398,6 +472,10 @@ let promote row col piece = curr_state.(row).(col) <- Some piece
 let play_turn p =
   if p then (
     update_turn ();
+    add_state (Array.copy curr_state);
+    print_endline ("size: " ^ string_of_int (List.length !past_states));
+    print_past !past_states;
+    last_pawn_or_capture := !last_pawn_or_capture + 1;
     true)
   else false
 
@@ -437,8 +515,14 @@ let valid_move state start_row start_col end_row end_col =
             has_moved.(4) <- true;
           play_turn (is_valid_king_move start_row start_col end_row end_col)
       | "B_Pawn" | "W_Pawn" ->
-          play_turn
-            (is_valid_pawn_move state piece start_row start_col end_row end_col)
+          if
+            play_turn
+              (is_valid_pawn_move state piece start_row start_col end_row
+                 end_col)
+          then
+            let _ = last_pawn_or_capture := 0 in
+            true
+          else false
       | _ -> false
 
 (*---------------------------------------------------------------------*)
@@ -469,6 +553,8 @@ let captured_B = ref []
 let update_captures row col =
   if curr_state.(row).(col) = None then ()
   else
+    let _ = last_pawn_or_capture := 0 in
+    (* let _ = past_states := [] in *)
     match curr_state.(row).(col) with
     | Some p -> (
         match p.[0] with
@@ -495,7 +581,7 @@ let rec total_material captured =
 (**[material_advantage] is a tuple whose first element is the color that has the
    material advantage and whose second element is the value of the advantage.
    returns [("same", 0)] if the two sides are equal in terms of material*)
-let material_advantage =
+let material_advantage () =
   let adv = abs (total_material !captured_B - total_material !captured_W) in
   if total_material !captured_B - total_material !captured_W = 0 then ("same", 0)
   else if total_material !captured_B - total_material !captured_W > 0 then
@@ -506,3 +592,10 @@ let material_advantage =
 (*---------------------------------------------------------------------*)
 (*---------------------------------------------------------------------*)
 (*---------------------------------------------------------------------*)
+
+let is_draw state =
+  if fifty_move () then "50 move rule"
+  else if stalemated state then "stalement"
+  else if three_fold !past_states then "draw by repetition"
+  else if insufficient_material state then "insufficient material"
+  else "no"
