@@ -133,7 +133,7 @@ let update_turn () =
 (**************END GAME***********)
 
 let last_pawn_or_capture = ref 0
-let fifty_move () = if !last_pawn_or_capture = 100 then true else false
+let fifty_move = !last_pawn_or_capture = 100
 
 let insufficient_material state =
   let remaining_b = ref [] in
@@ -472,7 +472,7 @@ let promote row col piece = curr_state.(row).(col) <- Some piece
 let play_turn p =
   if p then (
     update_turn ();
-    add_state (Array.copy curr_state);
+    add_state (Array.map Array.copy curr_state);
     print_endline ("size: " ^ string_of_int (List.length !past_states));
     print_past !past_states;
     last_pawn_or_capture := !last_pawn_or_capture + 1;
@@ -519,9 +519,9 @@ let valid_move state start_row start_col end_row end_col =
             play_turn
               (is_valid_pawn_move state piece start_row start_col end_row
                  end_col)
-          then
-            let _ = last_pawn_or_capture := 0 in
-            true
+          then (
+            last_pawn_or_capture := 0;
+            true)
           else false
       | _ -> false
 
@@ -594,7 +594,7 @@ let material_advantage () =
 (*---------------------------------------------------------------------*)
 
 let is_draw state =
-  if fifty_move () then "50 move rule"
+  if fifty_move then "50 move rule"
   else if stalemated state then "stalement"
   else if three_fold !past_states then "draw by repetition"
   else if insufficient_material state then "insufficient material"
