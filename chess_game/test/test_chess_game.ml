@@ -323,7 +323,7 @@ let test_pawn_invalid_diagonal_moves _ =
   assert_bool "Pawn cannot move diagonally without capture - left up"
     (not (is_valid_pawn_move board "W_Pawn" 4 4 3 3))
 
-let setup_board () =
+let test_valid_piece_moves _ =
   let board = empty_board () in
   board.(1).(1) <- Some "W_Pawn";
   board.(2).(0) <- Some "B_King";
@@ -332,10 +332,6 @@ let setup_board () =
   board.(4).(4) <- Some "W_Knight";
   board.(7).(7) <- Some "W_Queen";
   board.(3).(3) <- Some "W_King";
-  board
-
-let test_valid_piece_moves _ =
-  let board = setup_board () in
   assert_bool "Valid bishop move" (is_valid_move board "W_Bishop" 0 2 1 3);
   assert_bool "Valid rook move" (is_valid_move board "W_Rook" 0 0 0 1);
   assert_bool "Valid knight move" (is_valid_move board "W_Knight" 4 4 6 5);
@@ -344,7 +340,14 @@ let test_valid_piece_moves _ =
   assert_bool "Valid pawn move" (is_valid_move board "W_Pawn" 1 1 0 1)
 
 let test_invalid_same_color_block _ =
-  let board = setup_board () in
+  let board = empty_board () in
+  board.(1).(1) <- Some "W_Pawn";
+  board.(2).(0) <- Some "B_King";
+  board.(0).(2) <- Some "W_Bishop";
+  board.(0).(0) <- Some "W_Rook";
+  board.(4).(4) <- Some "W_Knight";
+  board.(7).(7) <- Some "W_Queen";
+  board.(3).(3) <- Some "W_King";
   board.(1).(2) <- Some "W_Rook";
   assert_bool "Invalid bishop move due to block"
     (not (is_valid_move board "W_Bishop" 0 2 1 2));
@@ -352,14 +355,28 @@ let test_invalid_same_color_block _ =
     (not (is_valid_move board "W_Rook" 0 0 0 3))
 
 let test_invalid_piece_moves _ =
-  let board = setup_board () in
+  let board = empty_board () in
+  board.(1).(1) <- Some "W_Pawn";
+  board.(2).(0) <- Some "B_King";
+  board.(0).(2) <- Some "W_Bishop";
+  board.(0).(0) <- Some "W_Rook";
+  board.(4).(4) <- Some "W_Knight";
+  board.(7).(7) <- Some "W_Queen";
+  board.(3).(3) <- Some "W_King";
   assert_bool "Bishop invalid non-diagonal move"
     (not (is_valid_move board "W_Bishop" 0 2 0 3));
   assert_bool "Knight invalid move"
     (not (is_valid_move board "W_Knight" 4 4 4 6))
 
 let test_unrecognized_piece _ =
-  let board = setup_board () in
+  let board = empty_board () in
+  board.(1).(1) <- Some "W_Pawn";
+  board.(2).(0) <- Some "B_King";
+  board.(0).(2) <- Some "W_Bishop";
+  board.(0).(0) <- Some "W_Rook";
+  board.(4).(4) <- Some "W_Knight";
+  board.(7).(7) <- Some "W_Queen";
+  board.(3).(3) <- Some "W_King";
   assert_bool "Unrecognized piece type should return false"
     (not (is_valid_move board "W_Zebra" 0 0 3 0))
 
