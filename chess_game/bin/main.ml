@@ -120,6 +120,9 @@ let en_passant_gui (button : GButton.button) prev_row prev_col row col =
     perform_en_passant button prev_row prev_col row col
   else failwith "Invalid en passant attempt"
 
+(* Function to update checkmate GUI *)
+(* let update_checkmate_gui = () *)
+
 (** [promote_pawn] creates a dialog box that allows the user to choose which
     piece to promote a pawn to. *)
 let promote_pawn color =
@@ -192,10 +195,26 @@ let create_square row col =
 
             (* update state *)
             Movement.update_state Movement.curr_state prev.row prev.col row col);
-          (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********)
-          if Movement.checkmated Movement.curr_state then
-            print_endline "checkmated"
-            (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********)
+          if Movement.checkmated Movement.curr_state then (
+            print_endline "checkmated";
+            let dialog =
+              GWindow.dialog ~width:600 ~height:150 ~title:"Checkmate!"
+                ~modal:true ()
+            in
+            let vbox = GPack.vbox ~packing:dialog#vbox#add () in
+            let _ =
+              GMisc.label ~text:"Checkmate! Game Over." ~packing:vbox#pack ()
+            in
+            let _ =
+              GMisc.label ~text:"Press OK to close." ~packing:vbox#pack ()
+            in
+            let button = GButton.button ~label:"OK" ~packing:vbox#add () in
+            ignore
+              (button#connect#clicked ~callback:(fun () ->
+                   dialog#response `DELETE_EVENT;
+                   Main.quit ()));
+            ignore (dialog#run ());
+            dialog#destroy ())
           else if Movement.is_draw Movement.curr_state <> "no" then
             print_endline (Movement.is_draw Movement.curr_state))
         else (
