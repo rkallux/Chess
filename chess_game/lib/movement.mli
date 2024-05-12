@@ -82,6 +82,13 @@ val in_check : string option array array -> bool
     false otherwise. *)
 val checkmated : string option array array -> bool
 
+(** [stalemated state] is true if a player is staleateds during [state] and
+    false otherwise. *)
+val stalemated : string option array array -> bool
+
+(*Used for testing only. Updates the number of last moves.*)
+val updatenumber_test : unit -> unit
+
 (** [is_valid_castle state s_row s_col e_row e_col] is true if the player has
     clicked on two legal squares for castling. *)
 val is_valid_castle :

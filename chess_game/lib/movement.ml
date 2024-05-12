@@ -148,6 +148,7 @@ let update_turn () =
 (**************END GAME***********)
 
 let last_pawn_or_capture = ref 0
+let updatenumber_test () = last_pawn_or_capture := 100
 let fifty_move = !last_pawn_or_capture = 100
 
 let insufficient_material state =

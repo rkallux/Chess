@@ -315,6 +315,27 @@ let test_king_edge_moves _ =
       (* Clear after test *))
     edge_positions
 
+let test_castling_valid _ =
+  let board = empty_board () in
+  (* Setting up a board where castling is possible *)
+  board.(7).(4) <- Some "W_King";
+  board.(7).(7) <- Some "W_Rook";
+  board.(7).(0) <- Some "W_Rook";
+  assert_bool "Kingside castling should be valid"
+    (is_valid_castle board 7 4 7 6);
+  assert_bool "Queenside castling should be valid"
+    (is_valid_castle board 7 4 7 2)
+
+let test_castling_invalid_through_check _ =
+  let board = empty_board () in
+  (* King is passing through a square under attack *)
+  board.(7).(4) <- Some "W_King";
+  board.(7).(7) <- Some "W_Rook";
+  board.(0).(5) <- Some "B_Rook";
+  (* Attacking the path of the king *)
+  assert_bool "Kingside castling should not be valid"
+    (not (is_valid_castle board 7 4 7 6))
+
 let test_pawn_normal_forward _ =
   let board = empty_board () in
   board.(6).(0) <- Some "W_Pawn";
@@ -366,6 +387,16 @@ let test_pawn_invalid_diagonal_moves _ =
     (not (is_valid_pawn_move board "W_Pawn" 4 4 3 5));
   assert_bool "Pawn cannot move diagonally without capture - left up"
     (not (is_valid_pawn_move board "W_Pawn" 4 4 3 3))
+
+let test_pawn_promotion_valid _ =
+  make_currstate_test ();
+  (* Pawn reaches the promotion square *)
+  curr_state.(1).(0) <- Some "W_Pawn";
+  update_currstate 1 0 0 0;
+  (* Move the pawn to the promotion square *)
+  promote 0 0 "W_Queen";
+  assert_equal "W_Queen" (piece_at curr_state 0 0)
+    ~msg:"Pawn should be promoted to Queen"
 
 let test_valid_piece_moves _ =
   let board = empty_board () in
@@ -465,6 +496,37 @@ let test_material_unexpected_characters _ =
 let test_material_partial_input _ =
   assert_equal 0 (material "Pawn") ~printer:string_of_int
 
+let test_king_in_check _ =
+  let board = empty_board () in
+  board.(7).(4) <- Some "W_King";
+  board.(7).(7) <- Some "B_Rook";
+  board.(0).(4) <- Some "B_Rook";
+  turn := "W";
+  assert_bool "King should be in check" (in_check board)
+
+(* let test_checkmate _ = let board = empty_board () in board.(0).(4) <- Some
+   "B_King"; board.(0).(3) <- Some "W_Queen"; board.(1).(4) <- Some "W_Queen";
+   board.(1).(5) <- Some "W_Queen"; turn := "B"; assert_bool "White should be in
+   checkmate" (checkmated board) *)
+
+let test_stalemate _ =
+  let board = empty_board () in
+  board.(7).(7) <- Some "W_King";
+  board.(5).(6) <- Some "B_Queen";
+  board.(6).(5) <- Some "B_King";
+  turn := "W";
+  assert_bool "White should be in stalemate" (stalemated board)
+
+let test_draw_insufficient_material _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_King";
+  board.(7).(7) <- Some "B_King";
+  assert_equal "Insufficient Material" (is_draw board)
+
+(* let test_fifty_move_rule _ = let board = empty_board () in board.(2).(3) <-
+   Some "W_King"; board.(6).(5) <- Some "B_King"; updatenumber_test ();
+   assert_equal "50 move rule" (is_draw board) *)
+
 let suite =
   "Chess Game Tests"
   >::: [
@@ -478,7 +540,16 @@ let suite =
          "test_update_turn_invalid" >:: test_update_turn_invalid;
          "test_enpassant_capture" >:: test_enpassant_capture;
          "test_no_enpassant_capture" >:: test_no_enpassant_capture;
+         "test_castling_valid" >:: test_castling_valid;
+         "test_castling_invalid_through_check"
+         >:: test_castling_invalid_through_check;
+         "test_pawn_promotion_valid" >:: test_pawn_promotion_valid;
          "test_bishop_valid_moves" >:: test_bishop_valid_moves;
+         "test_king_in_check" >:: test_king_in_check;
+         (* "test_checkmate" >:: test_checkmate; *)
+         "test_stalemate" >:: test_stalemate;
+         "test_draw_insufficient_material" >:: test_draw_insufficient_material;
+         (* "test_fifty_move_rule" >:: test_fifty_move_rule; *)
          "test_bishop_blocked_moves" >:: test_bishop_blocked_moves;
          "test_bishop_invalid_moves" >:: test_bishop_invalid_moves;
          "test_rook_valid_horizontal_moves" >:: test_rook_valid_horizontal_moves;
