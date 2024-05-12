@@ -68,6 +68,50 @@ let test_bishop_blocked_moves _ =
   assert_bool "Move should be blocked by piece"
     (not (is_valid_bishop_move board 4 4 6 6))
 
+let test_enpassant_capture _ =
+  make_currstate_test ();
+  let board = empty_board () in
+  (* Set up the board state with pawns and simulate the last move *)
+  board.(6).(4) <- Some "W_Pawn";
+  (* White pawn *)
+  board.(1).(3) <- Some "B_Pawn";
+  (* Black pawn *)
+  curr_state.(6).(4) <- Some "W_Pawn";
+  curr_state.(1).(3) <- Some "B_Pawn";
+  update_currstate 6 4 4 4;
+  update_state board 6 4 4 4;
+  update_currstate 4 4 3 4;
+  update_state board 4 4 3 4;
+  update_currstate 1 3 3 3;
+  update_state board 1 3 3 3;
+  (* Set up the last move *)
+  (* Test en passant capture scenario *)
+  assert_bool "En passant capture should be detected"
+    (is_enpassant board 3 4 2 3)
+
+let test_no_enpassant_capture _ =
+  make_currstate_test ();
+  let board = empty_board () in
+  (* Set up the board state with pawns and simulate the last move *)
+  board.(6).(4) <- Some "W_Pawn";
+  (* White pawn *)
+  board.(1).(3) <- Some "B_Pawn";
+  (* Black pawn *)
+  curr_state.(6).(4) <- Some "W_Pawn";
+  curr_state.(1).(3) <- Some "B_Pawn";
+  update_currstate 6 4 4 4;
+  update_state board 6 4 4 4;
+  update_currstate 4 4 3 4;
+  update_state board 4 4 3 4;
+  update_currstate 1 3 2 3;
+  update_state board 1 3 2 3;
+  update_currstate 2 3 3 3;
+  update_state board 2 3 3 3;
+  (* Set up the last move *)
+  (* Test scenario where there is no en passant capture *)
+  assert_bool "No en passant capture should be detected"
+    (not (is_enpassant board 3 4 2 3))
+
 let test_bishop_invalid_moves _ =
   let board = empty_board () in
   board.(4).(4) <- Some "B_Bishop";
@@ -432,6 +476,8 @@ let suite =
          "test_update_turn_white_to_black" >:: test_update_turn_white_to_black;
          "test_update_turn_black_to_white" >:: test_update_turn_black_to_white;
          "test_update_turn_invalid" >:: test_update_turn_invalid;
+         "test_enpassant_capture" >:: test_enpassant_capture;
+         "test_no_enpassant_capture" >:: test_no_enpassant_capture;
          "test_bishop_valid_moves" >:: test_bishop_valid_moves;
          "test_bishop_blocked_moves" >:: test_bishop_blocked_moves;
          "test_bishop_invalid_moves" >:: test_bishop_invalid_moves;

@@ -89,6 +89,21 @@ let rec three_fold past =
   | [] -> false
   | h :: t -> if snd h = 3 then true else three_fold t
 
+let update_currstate pr pc er ec =
+  curr_state.(er).(ec) <- curr_state.(pr).(pc);
+  curr_state.(pr).(pc) <- None
+
+let make_currstate_test () =
+  Array.iter
+    (fun row ->
+      (* Iterate through each element in the row *)
+      Array.iteri
+        (fun idx _ ->
+          (* Change each element to None *)
+          row.(idx) <- None)
+        row)
+    curr_state
+
 let update_state state pr pc er ec =
   let piece = piece_at state pr pc in
   let is_two_square_move =

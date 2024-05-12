@@ -103,6 +103,13 @@ val total_material : string list -> int
 (** Updates the game state to reflect a move from one position to another *)
 val update_state : string option array array -> int -> int -> int -> int -> unit
 
+(** Used only for testing. Updates the curr_state to reflect a move from one
+    position to another*)
+val update_currstate : int -> int -> int -> int -> unit
+
+(* Used only for testing. Update curr_state to an empty board.*)
+val make_currstate_test : unit -> unit
+
 (** Captures a piece at a specific board position and updates the array of
     captured pieces *)
 val update_captures : string option array array -> int -> int -> unit
