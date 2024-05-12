@@ -145,6 +145,27 @@ let promote_pawn color =
   dialog#destroy ();
   !result
 
+let endgame_gui checkmate checkmatetext pressok ok =
+  let dialog =
+    GWindow.dialog ~width:600 ~height:150 ~title:checkmate ~modal:true ()
+  in
+  let vbox = GPack.vbox ~packing:dialog#vbox#add () in
+  let _ = GMisc.label ~text:checkmatetext ~packing:vbox#pack () in
+  let _ = GMisc.label ~text:pressok ~packing:vbox#pack () in
+  let button = GButton.button ~label:ok ~packing:vbox#add () in
+  ignore
+    (button#connect#clicked ~callback:(fun () ->
+         dialog#response `DELETE_EVENT;
+         ignore (dialog#destroy ())));
+  ignore (dialog#run ());
+  dialog#destroy ()
+
+let turn =
+  match !Movement.turn with
+  | "W" -> "WHITE"
+  | "B" -> "BLACK"
+  | _ -> ""
+
 (* Function to create a square *)
 let create_square row col =
   let button = GButton.button ~label:"" () in
@@ -196,27 +217,14 @@ let create_square row col =
             (* update state *)
             Movement.update_state Movement.curr_state prev.row prev.col row col);
           if Movement.checkmated Movement.curr_state then (
-            print_endline "checkmated";
-            let dialog =
-              GWindow.dialog ~width:600 ~height:150 ~title:"Checkmate!"
-                ~modal:true ()
-            in
-            let vbox = GPack.vbox ~packing:dialog#vbox#add () in
-            let _ =
-              GMisc.label ~text:"Checkmate! Game Over." ~packing:vbox#pack ()
-            in
-            let _ =
-              GMisc.label ~text:"Press OK to close." ~packing:vbox#pack ()
-            in
-            let button = GButton.button ~label:"OK" ~packing:vbox#add () in
-            ignore
-              (button#connect#clicked ~callback:(fun () ->
-                   dialog#response `DELETE_EVENT;
-                   Main.quit ()));
-            ignore (dialog#run ());
-            dialog#destroy ())
+            endgame_gui "Checkmate!"
+              ("Checkmate! Game Over. " ^ turn ^ " WINS!")
+              "Press OK to close." "OK";
+            Main.quit ())
           else if Movement.is_draw Movement.curr_state <> "no" then
-            print_endline (Movement.is_draw Movement.curr_state))
+            endgame_gui "Game Drawn!"
+              (Movement.is_draw Movement.curr_state)
+              "Press OK to close." "OK")
         else (
           (* didn't click on a piece *)
           prev.row <- row;
@@ -300,8 +308,9 @@ let create_homescreen_window () =
   window#show ();
   ()
 
-let main () =
+let playgame () =
   create_homescreen_window ();
   Main.main ()
+(* if Movement.checkmated Movement.curr_state then playgame () *)
 
-let () = main ()
+let () = playgame ()

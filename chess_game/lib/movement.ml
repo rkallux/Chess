@@ -593,7 +593,7 @@ let material_advantage () =
 
 let is_draw state =
   if fifty_move then "50 move rule"
-  else if stalemated state then "stalement"
-  else if three_fold !past_states then "draw by repetition"
-  else if insufficient_material state then "insufficient material"
+  else if stalemated state then "Stalement"
+  else if three_fold !past_states then "Draw by Repetition"
+  else if insufficient_material state then "Insufficient Material"
   else "no"
