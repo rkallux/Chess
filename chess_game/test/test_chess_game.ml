@@ -316,6 +316,7 @@ let test_king_edge_moves _ =
     edge_positions
 
 let test_castling_valid _ =
+  reset_states ();
   let board = empty_board () in
   (* Setting up a board where castling is possible *)
   board.(7).(4) <- Some "W_King";
@@ -327,6 +328,7 @@ let test_castling_valid _ =
     (is_valid_castle board 7 4 7 2)
 
 let test_castling_invalid_through_check _ =
+  reset_states ();
   let board = empty_board () in
   (* King is passing through a square under attack *)
   board.(7).(4) <- Some "W_King";
@@ -515,7 +517,7 @@ let test_stalemate _ =
   board.(5).(6) <- Some "B_Queen";
   board.(6).(5) <- Some "B_King";
   turn := "W";
-  assert_bool "White should be in stalemate" (stalemated board)
+  assert_equal "Stalemate" (is_draw board)
 
 let test_draw_insufficient_material _ =
   let board = empty_board () in

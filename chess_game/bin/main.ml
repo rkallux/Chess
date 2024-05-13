@@ -120,9 +120,6 @@ let en_passant_gui (button : GButton.button) prev_row prev_col row col =
     perform_en_passant button prev_row prev_col row col
   else failwith "Invalid en passant attempt"
 
-(* Function to update checkmate GUI *)
-(* let update_checkmate_gui = () *)
-
 (** [promote_pawn] creates a dialog box that allows the user to choose which
     piece to promote a pawn to. *)
 let promote_pawn color =
@@ -167,6 +164,19 @@ let turn =
   | _ -> ""
 
 (* Function to create a square *)
+let check_end_of_game () =
+  if Movement.checkmated Movement.curr_state then (
+    endgame_gui "Checkmate!"
+      ("Checkmate! Game Over. " ^ turn ^ " WINS!")
+      "Press OK to close." "OK";
+    Main.quit ())
+  else if Movement.is_draw Movement.curr_state <> "no" then begin
+    endgame_gui "Game Drawn!"
+      (Movement.is_draw Movement.curr_state)
+      "Press OK to close." "OK";
+    Main.quit ()
+  end
+
 let create_square row col =
   let button = GButton.button ~label:"" () in
   if Movement.has_piece Movement.curr_state row col then
@@ -182,10 +192,9 @@ let create_square row col =
         then (
           (* updates gui and state *)
           castle button prev.row prev.col row col;
-          (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********)
           if Movement.checkmated Movement.curr_state then
-            print_endline "checkmated"
-            (********* TODO: IMPLEMENT GAME END WHEN IN CHECKMATE **********))
+            print_endline "checkmated";
+          check_end_of_game ())
         else if
           Movement.valid_move Movement.curr_state prev.row prev.col row col
         then (
@@ -216,15 +225,7 @@ let create_square row col =
 
             (* update state *)
             Movement.update_state Movement.curr_state prev.row prev.col row col);
-          if Movement.checkmated Movement.curr_state then (
-            endgame_gui "Checkmate!"
-              ("Checkmate! Game Over. " ^ turn ^ " WINS!")
-              "Press OK to close." "OK";
-            Main.quit ())
-          else if Movement.is_draw Movement.curr_state <> "no" then
-            endgame_gui "Game Drawn!"
-              (Movement.is_draw Movement.curr_state)
-              "Press OK to close." "OK")
+          check_end_of_game ())
         else (
           (* didn't click on a piece *)
           prev.row <- row;
@@ -311,6 +312,5 @@ let create_homescreen_window () =
 let playgame () =
   create_homescreen_window ();
   Main.main ()
-(* if Movement.checkmated Movement.curr_state then playgame () *)
 
 let () = playgame ()

@@ -33,15 +33,15 @@ let piece_at state row col =
   | Some piece -> piece
   | None -> ""
 
-let is_enpassant curr_state pr pc er ec =
+let is_enpassant state pr pc er ec =
   let last_piece, (last_pr, last_pc), (last_er, _), was_two_square_move =
     !last_move
   in
-  let piece = piece_at curr_state pr pc in
+  let piece = piece_at state pr pc in
   (* Check if the current move's piece is a pawn moving diagonally to an empty
      square *)
   piece.[2] = 'P'
-  && curr_state.(er).(ec) = None
+  && state.(er).(ec) = None
   && abs (pr - er) = 1
   && abs (pc - ec) = 1
   (* Check if the last move was a pawn moving two squares directly ahead of the
@@ -54,22 +54,6 @@ let is_enpassant curr_state pr pc er ec =
 
 let update_enpassant_captured_state curr_state r c = curr_state.(r).(c) <- None
 let past_states = ref []
-
-let print_array arr =
-  for i = 0 to 7 do
-    for j = 0 to 7 do
-      print_string (piece_at arr i j ^ "")
-    done;
-    print_endline ""
-  done
-
-let rec print_past pst =
-  match pst with
-  | [] -> ()
-  | h :: t ->
-      print_array (fst h);
-      print_endline (snd h |> string_of_int);
-      print_past t
 
 let add_state pos =
   let rec contains lst elem =
@@ -111,7 +95,7 @@ let update_state state pr pc er ec =
   in
   state.(er).(ec) <- state.(pr).(pc);
   state.(pr).(pc) <- None;
-  if state = curr_state then (
+  if state = curr_state && piece <> "" then (
     last_move := (piece, (pr, pc), (er, ec), is_two_square_move);
     (* Handle en passant capture *)
     if abs (pr - er) = 1 && abs (pc - ec) = 1 && piece.[2] = 'P' then
@@ -415,41 +399,41 @@ let update_rook_moved r c =
   | 0, 0 -> has_moved.(3) <- true (* Black queenside rook has moved *)
   | _ -> ()
 
-let checks_for_castle a b c d =
+let checks_for_castle state a b c d =
   (* a, b, c, d are just factored out variables (not especially meaningful) *)
-  curr_state.(a).(b) = None
-  && curr_state.(a).(c) = None
+  state.(a).(b) = None
+  && state.(a).(c) = None
   && (!turn = if a = 7 then "W" else "B")
   && (not has_moved.(if a = 7 then 4 else 5))
   && not has_moved.(d)
 
-let is_valid_castle curr_state start_row start_col end_row end_col =
-  let piece = piece_at curr_state start_row start_col in
+let is_valid_castle state start_row start_col end_row end_col =
+  let piece = piece_at state start_row start_col in
   if not (piece = "B_King" || piece = "W_King") then false
   else
     match (start_row, start_col, end_row, end_col) with
     | 7, 4, 7, 6 ->
-        checks_for_castle 7 5 6 0
-        && (not (List.mem (7, 4) (valid_b_moves curr_state)))
-        && (not (List.mem (7, 5) (valid_b_moves curr_state)))
-        && not (List.mem (7, 6) (valid_b_moves curr_state))
+        checks_for_castle state 7 5 6 0
+        && (not (List.mem (7, 4) (valid_b_moves state)))
+        && (not (List.mem (7, 5) (valid_b_moves state)))
+        && not (List.mem (7, 6) (valid_b_moves state))
     | 7, 4, 7, 2 ->
-        curr_state.(7).(1) = None
-        && checks_for_castle 7 2 3 1
-        && (not (List.mem (7, 2) (valid_b_moves curr_state)))
-        && (not (List.mem (7, 3) (valid_b_moves curr_state)))
-        && not (List.mem (7, 4) (valid_b_moves curr_state))
+        state.(7).(1) = None
+        && checks_for_castle state 7 2 3 1
+        && (not (List.mem (7, 2) (valid_b_moves state)))
+        && (not (List.mem (7, 3) (valid_b_moves state)))
+        && not (List.mem (7, 4) (valid_b_moves state))
     | 0, 4, 0, 6 ->
-        checks_for_castle 0 5 6 2
-        && (not (List.mem (0, 4) (valid_w_moves curr_state)))
-        && (not (List.mem (0, 5) (valid_w_moves curr_state)))
-        && not (List.mem (0, 6) (valid_w_moves curr_state))
+        checks_for_castle state 0 5 6 2
+        && (not (List.mem (0, 4) (valid_w_moves state)))
+        && (not (List.mem (0, 5) (valid_w_moves state)))
+        && not (List.mem (0, 6) (valid_w_moves state))
     | 0, 4, 0, 2 ->
-        curr_state.(0).(1) = None
-        && checks_for_castle 0 2 3 3
-        && (not (List.mem (0, 2) (valid_w_moves curr_state)))
-        && (not (List.mem (0, 3) (valid_w_moves curr_state)))
-        && not (List.mem (0, 4) (valid_w_moves curr_state))
+        state.(0).(1) = None
+        && checks_for_castle state 0 2 3 3
+        && (not (List.mem (0, 2) (valid_w_moves state)))
+        && (not (List.mem (0, 3) (valid_w_moves state)))
+        && not (List.mem (0, 4) (valid_w_moves state))
     | _ -> false
 
 let type_castle start_row start_col end_row end_col =
@@ -609,7 +593,15 @@ let material_advantage () =
 
 let is_draw state =
   if fifty_move then "50 move rule"
-  else if stalemated state then "Stalement"
+  else if stalemated state then "Stalemate"
   else if three_fold !past_states then "Draw by Repetition"
   else if insufficient_material state then "Insufficient Material"
   else "no"
+
+let reset_states () =
+  past_states := [];
+  turn := "W";
+  last_pawn_or_capture := 0;
+  captured_B := [];
+  captured_W := [];
+  Array.fill has_moved 0 5 false

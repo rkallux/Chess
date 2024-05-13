@@ -66,14 +66,6 @@ val is_valid_pawn_move :
 val is_valid_move :
   string option array array -> string -> int -> int -> int -> int -> bool
 
-(** [valid_b_moves state] is the list of all valid black moves during [state].
-    Where valid does not include checks. *)
-val valid_b_moves : string option array array -> (int * int) list
-
-(** [valid_w_moves state] is the list of all valid white moves during [state].
-    Where valid does not include checks. *)
-val valid_w_moves : string option array array -> (int * int) list
-
 (** [in_check state] is true if a player is in check during [state] and false
     otherwise. *)
 val in_check : string option array array -> bool
@@ -82,12 +74,9 @@ val in_check : string option array array -> bool
     false otherwise. *)
 val checkmated : string option array array -> bool
 
-(** [stalemated state] is true if a player is staleateds during [state] and
-    false otherwise. *)
-val stalemated : string option array array -> bool
-
-(*Used for testing only. Updates the number of last moves.*)
-val updatenumber_test : unit -> unit
+(** [is_draw state] is true if the current position of [state] is a draw and
+    false otherwise*)
+val is_draw : string option array array -> string
 
 (** [is_valid_castle state s_row s_col e_row e_col] is true if the player has
     clicked on two legal squares for castling. *)
@@ -110,13 +99,6 @@ val total_material : string list -> int
 (** Updates the game state to reflect a move from one position to another *)
 val update_state : string option array array -> int -> int -> int -> int -> unit
 
-(** Used only for testing. Updates the curr_state to reflect a move from one
-    position to another*)
-val update_currstate : int -> int -> int -> int -> unit
-
-(* Used only for testing. Update curr_state to an empty board.*)
-val make_currstate_test : unit -> unit
-
 (** Captures a piece at a specific board position and updates the array of
     captured pieces *)
 val update_captures : string option array array -> int -> int -> unit
@@ -131,4 +113,20 @@ val promote : int -> int -> string -> unit
 val update_enpassant_captured_state :
   string option array array -> int -> int -> unit
 
-val is_draw : string option array array -> string
+(*************************** TESTING FUNCTIONS ****************************)
+
+(** Used only for testing. Updates the curr_state to reflect a move from one
+    position to another*)
+val update_currstate : int -> int -> int -> int -> unit
+
+(* Used only for testing. Update curr_state to an empty board.*)
+val make_currstate_test : unit -> unit
+
+(*Used for testing only. Updates the number of last moves.*)
+val updatenumber_test : unit -> unit
+
+(*Used only for testing. Resets states of the board that can't be modified
+  outside of Movemen. *)
+val reset_states : unit -> unit
+
+(*************************** TESTING FUNCTIONS ****************************)
