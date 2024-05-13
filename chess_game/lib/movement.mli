@@ -96,37 +96,38 @@ val material : string -> int
 (** [total_material p_list] is sum of the worth of all pieces in [p_list]. ]*)
 val total_material : string list -> int
 
-(** Updates the game state to reflect a move from one position to another *)
+(** Updates the game state to reflect a move from one position to another. *)
 val update_state : string option array array -> int -> int -> int -> int -> unit
 
 (** Captures a piece at a specific board position and updates the array of
-    captured pieces *)
+    captured pieces. *)
 val update_captures : string option array array -> int -> int -> unit
 
-(** Updates the turn to the next player *)
+(** Updates the turn to the next player. *)
 val update_turn : unit -> unit
 
-(** Promotes a pawn to a new piece at a specific board position *)
+(** Promotes a pawn to a new piece at a specific board position. *)
 val promote : int -> int -> string -> unit
 
-(** Updates the state to reflect the captured pawn during an en passant *)
+(** Updates the state to reflect the captured pawn during an en passant. *)
 val update_enpassant_captured_state :
   string option array array -> int -> int -> unit
 
 (*************************** TESTING FUNCTIONS ****************************)
 
 (** Used only for testing. Updates the curr_state to reflect a move from one
-    position to another*)
+    position to another. *)
 val update_currstate : int -> int -> int -> int -> unit
 
-(* Used only for testing. Update curr_state to an empty board.*)
-val make_currstate_test : unit -> unit
-
-(*Used for testing only. Updates the number of last moves.*)
-val updatenumber_test : unit -> unit
+(* Used only for testing. Update curr_state to an empty board. *)
+val make_currstate_empty : unit -> unit
 
 (*Used only for testing. Resets states of the board that can't be modified
-  outside of Movemen. *)
+  outside of Movement. *)
 val reset_states : unit -> unit
+
+(* Used only for testing. The number of moves since the last pawn move or
+   capture. *)
+val last_pawn_or_capture : int ref
 
 (*************************** TESTING FUNCTIONS ****************************)

@@ -4,6 +4,10 @@ open Chess_game.Movement
 (* create an empty board *)
 let empty_board () = Array.make_matrix 8 8 None
 
+let update_states board r c p =
+  board.(r).(c) <- p;
+  curr_state.(r).(c) <- p
+
 let test_piece_at_piece _ =
   let board = empty_board () in
   board.(6).(0) <- Some "W_Pawn";
@@ -69,15 +73,11 @@ let test_bishop_blocked_moves _ =
     (not (is_valid_bishop_move board 4 4 6 6))
 
 let test_enpassant_capture _ =
-  make_currstate_test ();
+  make_currstate_empty ();
   let board = empty_board () in
   (* Set up the board state with pawns and simulate the last move *)
-  board.(6).(4) <- Some "W_Pawn";
-  (* White pawn *)
-  board.(1).(3) <- Some "B_Pawn";
-  (* Black pawn *)
-  curr_state.(6).(4) <- Some "W_Pawn";
-  curr_state.(1).(3) <- Some "B_Pawn";
+  update_states board 6 4 (Some "W_Pawn");
+  update_states board 1 3 (Some "B_Pawn");
   update_currstate 6 4 4 4;
   update_state board 6 4 4 4;
   update_currstate 4 4 3 4;
@@ -90,15 +90,11 @@ let test_enpassant_capture _ =
     (is_enpassant board 3 4 2 3)
 
 let test_no_enpassant_capture _ =
-  make_currstate_test ();
+  make_currstate_empty ();
   let board = empty_board () in
   (* Set up the board state with pawns and simulate the last move *)
-  board.(6).(4) <- Some "W_Pawn";
-  (* White pawn *)
-  board.(1).(3) <- Some "B_Pawn";
-  (* Black pawn *)
-  curr_state.(6).(4) <- Some "W_Pawn";
-  curr_state.(1).(3) <- Some "B_Pawn";
+  update_states board 6 4 (Some "W_Pawn");
+  update_states board 1 3 (Some "B_Pawn");
   update_currstate 6 4 4 4;
   update_state board 6 4 4 4;
   update_currstate 4 4 3 4;
@@ -391,14 +387,13 @@ let test_pawn_invalid_diagonal_moves _ =
     (not (is_valid_pawn_move board "W_Pawn" 4 4 3 3))
 
 let test_pawn_promotion_valid _ =
-  make_currstate_test ();
+  make_currstate_empty ();
   (* Pawn reaches the promotion square *)
   curr_state.(1).(0) <- Some "W_Pawn";
   update_currstate 1 0 0 0;
   (* Move the pawn to the promotion square *)
   promote 0 0 "W_Queen";
   assert_equal "W_Queen" (piece_at curr_state 0 0)
-    ~msg:"Pawn should be promoted to Queen"
 
 let test_valid_piece_moves _ =
   let board = empty_board () in
@@ -506,10 +501,15 @@ let test_king_in_check _ =
   turn := "W";
   assert_bool "King should be in check" (in_check board)
 
-(* let test_checkmate _ = let board = empty_board () in board.(0).(4) <- Some
-   "B_King"; board.(0).(3) <- Some "W_Queen"; board.(1).(4) <- Some "W_Queen";
-   board.(1).(5) <- Some "W_Queen"; turn := "B"; assert_bool "White should be in
-   checkmate" (checkmated board) *)
+let test_checkmate _ =
+  reset_states ();
+  make_currstate_empty ();
+  let board = empty_board () in
+  update_states board 0 4 (Some "B_King");
+  update_states board 0 3 (Some "W_Queen");
+  update_states board 1 2 (Some "W_Queen");
+  turn := "B";
+  assert_bool "Black should be in checkmate" (checkmated board)
 
 let test_stalemate _ =
   let board = empty_board () in
@@ -520,14 +520,25 @@ let test_stalemate _ =
   assert_equal "Stalemate" (is_draw board)
 
 let test_draw_insufficient_material _ =
+  reset_states ();
   let board = empty_board () in
   board.(0).(0) <- Some "W_King";
   board.(7).(7) <- Some "B_King";
   assert_equal "Insufficient Material" (is_draw board)
 
-(* let test_fifty_move_rule _ = let board = empty_board () in board.(2).(3) <-
-   Some "W_King"; board.(6).(5) <- Some "B_King"; updatenumber_test ();
-   assert_equal "50 move rule" (is_draw board) *)
+let rec move_fifty board n =
+  if n <> 0 then
+    if valid_move board 2 3 2 2 then move_fifty board (n - 1)
+    else if valid_move board 6 5 6 6 then move_fifty board (n - 1)
+
+let test_fifty_move_rule _ =
+  reset_states ();
+  make_currstate_empty ();
+  let board = empty_board () in
+  board.(2).(3) <- Some "W_King";
+  board.(6).(5) <- Some "B_King";
+  move_fifty board 100;
+  assert_equal "50 move rule" (is_draw board)
 
 let suite =
   "Chess Game Tests"
@@ -548,10 +559,10 @@ let suite =
          "test_pawn_promotion_valid" >:: test_pawn_promotion_valid;
          "test_bishop_valid_moves" >:: test_bishop_valid_moves;
          "test_king_in_check" >:: test_king_in_check;
-         (* "test_checkmate" >:: test_checkmate; *)
+         "test_checkmate" >:: test_checkmate;
          "test_stalemate" >:: test_stalemate;
          "test_draw_insufficient_material" >:: test_draw_insufficient_material;
-         (* "test_fifty_move_rule" >:: test_fifty_move_rule; *)
+         "test_fifty_move_rule" >:: test_fifty_move_rule;
          "test_bishop_blocked_moves" >:: test_bishop_blocked_moves;
          "test_bishop_invalid_moves" >:: test_bishop_invalid_moves;
          "test_rook_valid_horizontal_moves" >:: test_rook_valid_horizontal_moves;

@@ -77,7 +77,7 @@ let update_currstate pr pc er ec =
   curr_state.(er).(ec) <- curr_state.(pr).(pc);
   curr_state.(pr).(pc) <- None
 
-let make_currstate_test () =
+let make_currstate_empty () =
   Array.iter
     (fun row ->
       (* Iterate through each element in the row *)
@@ -132,8 +132,7 @@ let update_turn () =
 (**************END GAME***********)
 
 let last_pawn_or_capture = ref 0
-let updatenumber_test () = last_pawn_or_capture := 100
-let fifty_move = !last_pawn_or_capture = 100
+let fifty_move () = !last_pawn_or_capture = 100
 
 let insufficient_material state =
   let remaining_b = ref [] in
@@ -592,7 +591,7 @@ let material_advantage () =
 (*---------------------------------------------------------------------*)
 
 let is_draw state =
-  if fifty_move then "50 move rule"
+  if fifty_move () then "50 move rule"
   else if stalemated state then "Stalemate"
   else if three_fold !past_states then "Draw by Repetition"
   else if insufficient_material state then "Insufficient Material"
