@@ -545,10 +545,6 @@ let captured_W = ref []
    sorted based on the pieces' material value*)
 let captured_B = ref []
 
-let reset_captures () =
-  captured_W := [];
-  captured_B := []
-
 (**[update_captures row col] adds the piece at row [row] and column [col] into
    [captured_W] if it is a white piece and [captured_B] if it is black*)
 let update_captures curr_state row col =
