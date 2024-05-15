@@ -49,29 +49,6 @@ let test_update_turn_invalid _ =
   turn := "Invalid";
   assert_raises (Failure "") update_turn
 
-let test_bishop_valid_moves _ =
-  let board = empty_board () in
-  board.(4).(4) <- Some "B_Bishop";
-  let moves =
-    [
-      (5, 5); (6, 6); (3, 3); (* Southeast *) (5, 3); (6, 2); (3, 5);
-      (* Southwest *) (2, 2); (1, 1); (* Northwest *) (2, 6);
-      (1, 7) (* Northeast *);
-    ]
-  in
-  List.iter
-    (fun (er, ec) ->
-      assert_bool "Valid move should be true"
-        (is_valid_bishop_move board 4 4 er ec))
-    moves
-
-let test_bishop_blocked_moves _ =
-  let board = empty_board () in
-  board.(4).(4) <- Some "B_Bishop";
-  board.(5).(5) <- Some "W_Pawn";
-  assert_bool "Move should be blocked by piece"
-    (not (is_valid_bishop_move board 4 4 6 6))
-
 let test_enpassant_capture _ =
   make_currstate_empty ();
   let board = empty_board () in
@@ -107,6 +84,59 @@ let test_no_enpassant_capture _ =
   (* Test scenario where there is no en passant capture *)
   assert_bool "No en passant capture should be detected"
     (not (is_enpassant board 3 4 2 3))
+
+let test_bishop_valid_moves_se _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  let moves = [ (5, 5); (6, 6); (3, 3) (* Southeast *) ] in
+  List.iter
+    (fun (er, ec) ->
+      assert_bool "Valid move should be true"
+        (is_valid_bishop_move board 4 4 er ec))
+    moves
+
+let test_bishop_valid_moves_sw _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  let moves = [ (5, 3); (6, 2); (3, 5) (* Southwest *) ] in
+  List.iter
+    (fun (er, ec) ->
+      assert_bool "Valid move should be true"
+        (is_valid_bishop_move board 4 4 er ec))
+    moves
+
+let test_bishop_valid_moves_nw _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  let moves = [ (2, 2); (1, 1) (* Northwest *) ] in
+  List.iter
+    (fun (er, ec) ->
+      assert_bool "Valid move should be true"
+        (is_valid_bishop_move board 4 4 er ec))
+    moves
+
+let test_bishop_valid_moves_ne _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  let moves = [ (2, 6); (1, 7) (* Northeast *) ] in
+  List.iter
+    (fun (er, ec) ->
+      assert_bool "Valid move should be true"
+        (is_valid_bishop_move board 4 4 er ec))
+    moves
+
+let test_bishop_valid_moves _ =
+  test_bishop_valid_moves_se ();
+  test_bishop_valid_moves_sw ();
+  test_bishop_valid_moves_nw ();
+  test_bishop_valid_moves_ne ()
+
+let test_bishop_blocked_moves _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  board.(5).(5) <- Some "W_Pawn";
+  assert_bool "Move should be blocked by piece"
+    (not (is_valid_bishop_move board 4 4 6 6))
 
 let test_bishop_invalid_moves _ =
   let board = empty_board () in
