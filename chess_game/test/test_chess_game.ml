@@ -1057,6 +1057,124 @@ let test_random_captures _ =
     let _, adv = material_advantage () in
     adv > 0)
 
+let test_rook_valid_moves _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "W_Rook";
+  let expected_moves =
+    [
+      (4, 5); (4, 6); (4, 7); (* Right *) (4, 3); (4, 2); (4, 1); (* Left *)
+      (5, 4); (6, 4); (7, 4); (* Down *) (3, 4); (2, 4); (1, 4); (0, 4) (* Up *);
+    ]
+    |> List.sort compare
+  in
+  let valid_moves = piece_valid_moves board "W_Rook" 4 4 |> List.sort compare in
+  assert_equal expected_moves valid_moves ~printer:(fun moves ->
+      List.map (fun (r, c) -> Printf.sprintf "(%d, %d)" r c) moves
+      |> String.concat "; ")
+
+let test_bishop_valid _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  let expected_moves =
+    [
+      (5, 5); (6, 6); (7, 7); (* Southeast *) (5, 3); (6, 2); (7, 1);
+      (* Southwest *) (3, 5); (2, 6); (1, 7); (* Northeast *) (3, 3); (2, 2);
+      (1, 1); (* Northwest *)
+    ]
+    |> List.sort compare
+  in
+  let valid_moves =
+    piece_valid_moves board "B_Bishop" 4 4 |> List.sort compare
+  in
+  assert_equal expected_moves valid_moves ~printer:(fun moves ->
+      List.map (fun (r, c) -> Printf.sprintf "(%d, %d)" r c) moves
+      |> String.concat "; ")
+
+let test_knight_valid _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "W_Knight";
+  let expected_moves =
+    [
+      (6, 5); (6, 3); (5, 6); (5, 2); (* L shapes in various directions *)
+      (3, 6); (3, 2); (2, 5); (2, 3);
+    ]
+    |> List.sort compare
+  in
+  let valid_moves =
+    piece_valid_moves board "W_Knight" 4 4 |> List.sort compare
+  in
+  assert_equal expected_moves valid_moves ~printer:(fun moves ->
+      List.map (fun (r, c) -> Printf.sprintf "(%d, %d)" r c) moves
+      |> String.concat "; ")
+
+let test_queen_valid _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "W_Queen";
+  let expected_moves =
+    [
+      (* Combination of rook and bishop moves *) (5, 5); (6, 6); (7, 7); (5, 3);
+      (6, 2); (7, 1); (3, 5); (2, 6); (1, 7); (3, 3); (2, 2); (1, 1); (4, 5);
+      (4, 6); (4, 7); (4, 3); (4, 2); (4, 1); (5, 4); (6, 4); (7, 4); (3, 4);
+      (2, 4); (1, 4); (0, 4);
+    ]
+    |> List.sort compare
+  in
+  let valid_moves =
+    piece_valid_moves board "W_Queen" 4 4 |> List.sort compare
+  in
+  assert_equal expected_moves valid_moves ~printer:(fun moves ->
+      List.map (fun (r, c) -> Printf.sprintf "(%d, %d)" r c) moves
+      |> String.concat "; ")
+
+let mock_moves _ piece row col = [ (piece, (row, col)) ]
+
+let setup_board_with_pieces () =
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Pawn";
+  board.(0).(1) <- Some "B_Pawn";
+  board
+
+let test_add_valid_sqs_with_correct_color _ =
+  let board = setup_board_with_pieces () in
+  let acc = [] in
+  let result = add_valid_sqs mock_moves board "W" acc 0 0 in
+  assert_equal
+    [ ("W_Pawn", (0, 0)) ]
+    result
+    ~printer:(fun l ->
+      String.concat "; "
+        (List.map (fun (p, (r, c)) -> Printf.sprintf "%s at (%d,%d)" p r c) l))
+
+let test_add_valid_sqs_with_incorrect_color _ =
+  let board = setup_board_with_pieces () in
+  let acc = [] in
+  let result = add_valid_sqs mock_moves board "W" acc 0 1 in
+  assert_equal [] result ~printer:(fun l ->
+      String.concat "; "
+        (List.map (fun (p, (r, c)) -> Printf.sprintf "%s at (%d,%d)" p r c) l))
+
+let test_add_valid_sqs_empty_square _ =
+  let board = setup_board_with_pieces () in
+  let acc = [ ("Existing", (1, 1)) ] in
+  let result = add_valid_sqs mock_moves board "W" acc 1 1 in
+  assert_equal
+    [ ("Existing", (1, 1)) ]
+    result
+    ~printer:(fun l ->
+      String.concat "; "
+        (List.map (fun (p, (r, c)) -> Printf.sprintf "%s at (%d,%d)" p r c) l))
+
+let test_add_valid_sqs_accumulator_integration _ =
+  let board = setup_board_with_pieces () in
+  let acc = [ ("Existing", (1, 1)) ] in
+  let result = add_valid_sqs mock_moves board "W" acc 0 0 in
+  assert_equal
+    [ ("Existing", (1, 1)); ("W_Pawn", (0, 0)) ]
+    result
+    ~printer:(fun l ->
+      String.concat "; "
+        (List.map (fun (p, (r, c)) -> Printf.sprintf "%s at (%d,%d)" p r c) l))
+
 let suite =
   "Chess Game Tests"
   >::: [
@@ -1165,6 +1283,17 @@ let suite =
          "test_no_pieces_captured" >:: test_no_pieces_captured;
          "test_all_pieces_captured" >:: test_all_pieces_captured;
          "test_random_captures" >:: test_random_captures;
+         "test_rook_valid_moves" >:: test_rook_valid_moves;
+         "test_bishop_valid_moves" >:: test_bishop_valid;
+         "test_knight_valid" >:: test_knight_valid;
+         "test_queen_valid_move" >:: test_queen_valid;
+         "test_add_valid_sqs_with_correct_color"
+         >:: test_add_valid_sqs_with_correct_color;
+         "test_add_valid_sqs_with_incorrect_color"
+         >:: test_add_valid_sqs_with_incorrect_color;
+         "test_add_valid_sqs_empty_square" >:: test_add_valid_sqs_empty_square;
+         "test_add_valid_sqs_accumulator_integration"
+         >:: test_add_valid_sqs_accumulator_integration;
        ]
 
 let () = run_test_tt_main suite
