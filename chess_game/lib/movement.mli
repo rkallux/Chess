@@ -146,4 +146,7 @@ val add_valid_sqs :
   int ->
   'a list
 
+val valid_b_moves : string option array array -> (int * int) list
+val valid_w_moves : string option array array -> (int * int) list
+
 (*************************** TESTING FUNCTIONS ****************************)

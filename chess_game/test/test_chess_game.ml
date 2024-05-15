@@ -1175,6 +1175,43 @@ let test_add_valid_sqs_accumulator_integration _ =
       String.concat "; "
         (List.map (fun (p, (r, c)) -> Printf.sprintf "%s at (%d,%d)" p r c) l))
 
+let test_minimal_pieces_moves _ =
+  let board = empty_board () in
+  board.(1).(1) <- Some "B_King";
+  board.(6).(6) <- Some "W_King";
+  board.(1).(2) <- Some "B_Pawn";
+  board.(6).(5) <- Some "W_Pawn";
+  let black_moves = valid_b_moves board in
+  let white_moves = valid_w_moves board in
+  assert_bool "Black should have minimal moves" (List.length black_moves > 0);
+  assert_bool "White should have minimal moves" (List.length white_moves > 0)
+
+let test_mixed_scenario_moves _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(7).(0) <- Some "B_Rook";
+  board.(7).(1) <- Some "W_Knight";
+  board.(3).(3) <- Some "B_Queen";
+  board.(4).(4) <- Some "W_Queen";
+  let black_moves = valid_b_moves board in
+  let white_moves = valid_w_moves board in
+  assert_bool "Black should have moves in a mixed scenario"
+    (List.length black_moves > 0);
+  assert_bool "White should have moves in a mixed scenario"
+    (List.length white_moves > 0)
+
+let test_edge_cases_moves _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(0).(7) <- Some "W_King";
+  board.(7).(0) <- Some "B_Rook";
+  board.(7).(7) <- Some "W_Rook";
+  let black_moves = valid_b_moves board in
+  let white_moves = valid_w_moves board in
+  assert_bool "Ensure no invalid moves for edge pieces"
+    (List.length black_moves > 0 && List.length white_moves > 0)
+
 let suite =
   "Chess Game Tests"
   >::: [
@@ -1294,6 +1331,9 @@ let suite =
          "test_add_valid_sqs_empty_square" >:: test_add_valid_sqs_empty_square;
          "test_add_valid_sqs_accumulator_integration"
          >:: test_add_valid_sqs_accumulator_integration;
+         "test_minimal_pieces_moves" >:: test_minimal_pieces_moves;
+         "test_mixed_scenario_moves" >:: test_mixed_scenario_moves;
+         "test_edge_cases_moves" >:: test_edge_cases_moves;
        ]
 
 let () = run_test_tt_main suite
