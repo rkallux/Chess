@@ -125,14 +125,13 @@ val update_currstate : int -> int -> int -> int -> unit
 (* Used only for testing. Update curr_state to an empty board. *)
 val make_currstate_empty : unit -> unit
 
-(*Used only for testing. Resets states of the board that can't be modified
-  outside of Movement. *)
+(* Used only for testing. Resets states of the board that can't be modified
+   outside of Movement. *)
 val reset_states : unit -> unit
 
 (* Used only for testing. The number of moves since the last pawn move or
    capture. *)
 val last_pawn_or_capture : int ref
-val reset_captures : unit -> unit
 
 val piece_valid_moves :
   string option array array -> string -> int -> int -> (int * int) list
