@@ -1224,6 +1224,30 @@ let test_edge_cases_moves _ =
   assert_bool "Ensure no invalid moves for edge pieces"
     (List.length black_moves > 0 && List.length white_moves > 0)
 
+let test_get_piece_square_piece_found _ =
+  let board = empty_board () in
+  board.(3).(4) <- Some "W_King";
+  let result = get_piece_square board "W_King" 0 0 in
+  assert_equal (3, 4) result ~msg:"Should find W_King at (3, 4)"
+
+let test_get_piece_square_piece_not_found _ =
+  let board = empty_board () in
+  board.(3).(4) <- Some "W_Queen";
+  let result = get_piece_square board "W_King" 0 0 in
+  assert_equal (7, 7) result ~msg:"Should not find W_King, return (7, 7)"
+
+let test_get_piece_square_multiple_pieces _ =
+  let board = empty_board () in
+  board.(2).(3) <- Some "B_Knight";
+  board.(5).(5) <- Some "B_Knight";
+  let result = get_piece_square board "B_Knight" 0 0 in
+  assert_equal (2, 3) result ~msg:"Should find first B_Knight at (2, 3)"
+
+let test_get_piece_square_check_last_position _ =
+  let board = empty_board () in
+  let result = get_piece_square board "W_Pawn" 0 0 in
+  assert_equal (7, 7) result ~msg:"Should return (7, 7) if no W_Pawn found"
+
 let suite =
   "Chess Game Tests"
   >::: [
@@ -1346,6 +1370,14 @@ let suite =
          "test_minimal_pieces_moves" >:: test_minimal_pieces_moves;
          "test_mixed_scenario_moves" >:: test_mixed_scenario_moves;
          "test_edge_cases_moves" >:: test_edge_cases_moves;
+         "test_get_piece_square_piece_found"
+         >:: test_get_piece_square_piece_found;
+         "test_get_piece_square_piece_not_found"
+         >:: test_get_piece_square_piece_not_found;
+         "test_get_piece_square_multiple_pieces"
+         >:: test_get_piece_square_multiple_pieces;
+         "test_get_piece_square_check_last_position"
+         >:: test_get_piece_square_check_last_position;
        ]
 
 let () = run_test_tt_main suite

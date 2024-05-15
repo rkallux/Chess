@@ -148,4 +148,7 @@ val add_valid_sqs :
 val valid_b_moves : string option array array -> (int * int) list
 val valid_w_moves : string option array array -> (int * int) list
 
+val get_piece_square :
+  string option array array -> string -> int -> int -> int * int
+
 (*************************** TESTING FUNCTIONS ****************************)
