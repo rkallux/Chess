@@ -8,46 +8,81 @@ let update_states board r c p =
   board.(r).(c) <- p;
   curr_state.(r).(c) <- p
 
-let test_piece_at_piece _ =
+let test_piece_at_pawn _ =
   let board = empty_board () in
   board.(6).(0) <- Some "W_Pawn";
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
   assert_equal "W_Pawn" (piece_at board 6 0)
+
+let test_piece_at_king _ =
+  let board = empty_board () in
+  board.(6).(0) <- Some "W_Pawn";
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
+  assert_equal "B_King" (piece_at board 0 4)
+
+let test_piece_at_queen _ =
+  let board = empty_board () in
+  board.(6).(0) <- Some "W_Pawn";
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
+  assert_equal "W_Queen" (piece_at board 0 3)
+
+let test_piece_at_rook _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Rook";
+  assert_equal "W_Rook" (piece_at board 0 0)
+
+let test_piece_at_bishop _ =
+  let board = empty_board () in
+  board.(6).(0) <- Some "W_Pawn";
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
+  assert_equal "B_Bishop" (piece_at board 2 2)
+
+let test_piece_at_knight _ =
+  let board = empty_board () in
+  board.(6).(0) <- Some "W_Pawn";
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
+  assert_equal "B_Knight" (piece_at board 0 1)
+
+let test_piece_at _ =
+  test_piece_at_pawn ();
+  test_piece_at_king ();
+  test_piece_at_queen ();
+  test_piece_at_bishop ();
+  test_piece_at_rook ();
+  test_piece_at_knight ()
 
 let test_piece_at_no_piece _ =
   let board = empty_board () in
   board.(6).(0) <- Some "W_Pawn";
-  assert_equal "" (piece_at board 7 0)
-
-let test_same_color_same _ =
-  let board = empty_board () in
-  board.(0).(0) <- Some "W_King";
-  board.(0).(1) <- Some "W_Pawn";
-  assert_equal true (same_color board "W_King" 0 1)
-
-let test_same_color_different _ =
-  let board = empty_board () in
-  board.(0).(0) <- Some "W_King";
-  board.(0).(1) <- Some "B_Pawn";
-  assert_equal false (same_color board "W_King" 0 1)
-
-let test_same_color_no_piece _ =
-  let board = empty_board () in
-  board.(0).(0) <- Some "W_King";
-  assert_equal false (same_color board "W_King" 0 1)
-
-let test_update_turn_white_to_black _ =
-  turn := "W";
-  update_turn ();
-  assert_equal "B" !turn
-
-let test_update_turn_black_to_white _ =
-  turn := "B";
-  update_turn ();
-  assert_equal "W" !turn
-
-let test_update_turn_invalid _ =
-  turn := "Invalid";
-  assert_raises (Failure "") update_turn
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
+  assert_equal "" (piece_at board 7 0);
+  assert_equal "" (piece_at board 0 5);
+  assert_equal "" (piece_at board 0 2);
+  assert_equal "" (piece_at board 1 1)
 
 let test_enpassant_capture _ =
   make_currstate_empty ();
@@ -84,6 +119,70 @@ let test_no_enpassant_capture _ =
   (* Test scenario where there is no en passant capture *)
   assert_bool "No en passant capture should be detected"
     (not (is_enpassant board 3 4 2 3))
+
+let test_has_piece_with_piece _ =
+  let board = empty_board () in
+  board.(6).(0) <- Some "W_Pawn";
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
+  assert_bool "Should have piece" (has_piece board 6 0);
+  assert_bool "Should have piece" (has_piece board 0 4);
+  assert_bool "Should have piece" (has_piece board 0 3)
+
+let test_has_piece_without_piece _ =
+  let board = empty_board () in
+  assert_bool "Should not have piece" (not (has_piece board 3 3))
+
+let test_has_piece_boundary _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_Rook";
+  board.(7).(7) <- Some "W_Queen";
+  assert_bool "Should have piece at (0,0)" (has_piece board 0 0);
+  assert_bool "Should have piece at (7,7)" (has_piece board 7 7)
+
+let test_same_color_same _ =
+  let board = empty_board () in
+  board.(6).(0) <- Some "W_Pawn";
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
+  assert_equal true (same_color board "W_King" 6 0);
+  assert_equal true (same_color board "B_King" 0 1)
+
+let test_same_color_different _ =
+  let board = empty_board () in
+  board.(6).(0) <- Some "W_Pawn";
+  board.(0).(4) <- Some "B_King";
+  board.(0).(3) <- Some "W_Queen";
+  board.(0).(0) <- Some "W_Rook";
+  board.(2).(2) <- Some "B_Bishop";
+  board.(0).(1) <- Some "B_Knight";
+  assert_equal false (same_color board "W_King" 0 1);
+  assert_equal false (same_color board "B_King" 6 0)
+
+let test_same_color_no_piece _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_King";
+  assert_equal false (same_color board "W_King" 0 1)
+
+let test_update_turn_white_to_black _ =
+  turn := "W";
+  update_turn ();
+  assert_equal "B" !turn
+
+let test_update_turn_black_to_white _ =
+  turn := "B";
+  update_turn ();
+  assert_equal "W" !turn
+
+let test_update_turn_invalid _ =
+  turn := "Invalid";
+  assert_raises (Failure "") update_turn
 
 let test_bishop_valid_moves_se _ =
   let board = empty_board () in
@@ -573,8 +672,11 @@ let test_fifty_move_rule _ =
 let suite =
   "Chess Game Tests"
   >::: [
-         "test_piece_at_piece" >:: test_piece_at_piece;
+         "test_piece_at" >:: test_piece_at;
          "test_piece_at_no_piece" >:: test_piece_at_no_piece;
+         "test_has_piece_with_piece" >:: test_has_piece_with_piece;
+         "test_has_piece_without_piece" >:: test_has_piece_without_piece;
+         "test_has_piece_boundary" >:: test_has_piece_boundary;
          "test_same_color_same" >:: test_same_color_same;
          "test_same_color_different" >:: test_same_color_different;
          "test_same_color_no_piece" >:: test_same_color_no_piece;
