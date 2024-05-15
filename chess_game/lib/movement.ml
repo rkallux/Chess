@@ -545,6 +545,10 @@ let captured_W = ref []
    sorted based on the pieces' material value*)
 let captured_B = ref []
 
+let reset_captures () =
+  captured_W := [];
+  captured_B := []
+
 (**[update_captures row col] adds the piece at row [row] and column [col] into
    [captured_W] if it is a white piece and [captured_B] if it is black*)
 let update_captures curr_state row col =
@@ -582,8 +586,8 @@ let material_advantage () =
   let adv = abs (total_material !captured_B - total_material !captured_W) in
   if total_material !captured_B - total_material !captured_W = 0 then ("same", 0)
   else if total_material !captured_B - total_material !captured_W > 0 then
-    ("W", adv)
-  else ("B", adv)
+    ("B", adv)
+  else ("W", adv)
 
 (*************************** INFO BAR **********************************)
 (*---------------------------------------------------------------------*)

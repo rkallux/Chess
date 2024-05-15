@@ -132,5 +132,6 @@ val reset_states : unit -> unit
 (* Used only for testing. The number of moves since the last pawn move or
    capture. *)
 val last_pawn_or_capture : int ref
+val reset_captures : unit -> unit
 
 (*************************** TESTING FUNCTIONS ****************************)

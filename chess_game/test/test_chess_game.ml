@@ -239,18 +239,69 @@ let test_bishop_valid_moves _ =
   test_bishop_valid_moves_nw ();
   test_bishop_valid_moves_ne ()
 
-let test_bishop_blocked_moves _ =
+let test_bishop_blocked_moves_se _ =
   let board = empty_board () in
   board.(4).(4) <- Some "B_Bishop";
   board.(5).(5) <- Some "W_Pawn";
-  assert_bool "Move should be blocked by piece"
+  assert_bool "Southeast move should be blocked"
     (not (is_valid_bishop_move board 4 4 6 6))
 
-let test_bishop_invalid_moves _ =
+let test_bishop_blocked_moves_sw _ =
   let board = empty_board () in
   board.(4).(4) <- Some "B_Bishop";
-  assert_bool "Non-diagonal move should be false"
+  board.(5).(3) <- Some "W_Pawn";
+  assert_bool "Southwest move should be blocked"
+    (not (is_valid_bishop_move board 4 4 6 2))
+
+let test_bishop_blocked_moves_nw _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  board.(3).(3) <- Some "W_Pawn";
+  assert_bool "Northwest move should be blocked"
+    (not (is_valid_bishop_move board 4 4 2 2))
+
+let test_bishop_blocked_moves_ne _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  board.(3).(5) <- Some "W_Pawn";
+  assert_bool "Northeast move should be blocked"
+    (not (is_valid_bishop_move board 4 4 2 6))
+
+let test_bishop_blocked_moves _ =
+  test_bishop_blocked_moves_se ();
+  test_bishop_blocked_moves_sw ();
+  test_bishop_blocked_moves_nw ();
+  test_bishop_blocked_moves_ne ()
+
+let test_bishop_invalid_move_north _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  assert_bool "North move should be false"
+    (not (is_valid_bishop_move board 4 4 3 4))
+
+let test_bishop_invalid_move_south _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  assert_bool "South move should be false"
+    (not (is_valid_bishop_move board 4 4 5 4))
+
+let test_bishop_invalid_move_east _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  assert_bool "East move should be false"
     (not (is_valid_bishop_move board 4 4 4 5))
+
+let test_bishop_invalid_move_west _ =
+  let board = empty_board () in
+  board.(4).(4) <- Some "B_Bishop";
+  assert_bool "West move should be false"
+    (not (is_valid_bishop_move board 4 4 4 3))
+
+let test_bishop_invalid_moves _ =
+  test_bishop_invalid_move_north ();
+  test_bishop_invalid_move_south ();
+  test_bishop_invalid_move_east ();
+  test_bishop_invalid_move_west ()
 
 let test_rook_valid_horizontal_moves _ =
   let board = empty_board () in
@@ -590,47 +641,6 @@ let test_unrecognized_piece _ =
   assert_bool "Unrecognized piece type should return false"
     (not (is_valid_move board "W_Zebra" 0 0 3 0))
 
-let test_material_values _ =
-  let pieces =
-    [ "W_Pawn"; "W_Rook"; "W_Bishop"; "W_Knight"; "W_Queen"; "W_King" ]
-  in
-  let expected_values = [ 1; 5; 3; 3; 9; 0 ] in
-  List.iter2
-    (fun piece expected_value ->
-      let result = material piece in
-      assert_equal expected_value result ~printer:string_of_int)
-    pieces expected_values
-
-let test_material_pawn _ =
-  assert_equal 1 (material "B_Pawn") ~printer:string_of_int;
-  assert_equal 1 (material "W_Pawn") ~printer:string_of_int
-
-let test_material_rook _ =
-  assert_equal 5 (material "B_Rook") ~printer:string_of_int;
-  assert_equal 5 (material "W_Rook") ~printer:string_of_int
-
-let test_material_bishop _ =
-  assert_equal 3 (material "B_Bishop") ~printer:string_of_int;
-  assert_equal 3 (material "W_Bishop") ~printer:string_of_int
-
-let test_material_knight _ =
-  assert_equal 3 (material "B_Knight") ~printer:string_of_int;
-  assert_equal 3 (material "W_Knight") ~printer:string_of_int
-
-let test_material_queen _ =
-  assert_equal 9 (material "B_Queen") ~printer:string_of_int;
-  assert_equal 9 (material "W_Queen") ~printer:string_of_int
-
-let test_material_unexpected _ =
-  assert_equal 0 (material "B_King") ~printer:string_of_int;
-  assert_equal 0 (material "W_King") ~printer:string_of_int
-
-let test_material_unexpected_characters _ =
-  assert_equal 0 (material "W_Zebra") ~printer:string_of_int
-
-let test_material_partial_input _ =
-  assert_equal 0 (material "Pawn") ~printer:string_of_int
-
 let test_king_in_check _ =
   let board = empty_board () in
   board.(7).(4) <- Some "W_King";
@@ -755,6 +765,298 @@ let test_insufficient_material_two_knights_different_sides _ =
   assert_bool "Knights on different sides should still be insufficient"
     (insufficient_material board)
 
+let test_material_values _ =
+  let pieces =
+    [ "W_Pawn"; "W_Rook"; "W_Bishop"; "W_Knight"; "W_Queen"; "W_King" ]
+  in
+  let expected_values = [ 1; 5; 3; 3; 9; 0 ] in
+  List.iter2
+    (fun piece expected_value ->
+      let result = material piece in
+      assert_equal expected_value result ~printer:string_of_int)
+    pieces expected_values
+
+let test_material_pawn _ =
+  assert_equal 1 (material "B_Pawn") ~printer:string_of_int;
+  assert_equal 1 (material "W_Pawn") ~printer:string_of_int
+
+let test_material_rook _ =
+  assert_equal 5 (material "B_Rook") ~printer:string_of_int;
+  assert_equal 5 (material "W_Rook") ~printer:string_of_int
+
+let test_material_bishop _ =
+  assert_equal 3 (material "B_Bishop") ~printer:string_of_int;
+  assert_equal 3 (material "W_Bishop") ~printer:string_of_int
+
+let test_material_knight _ =
+  assert_equal 3 (material "B_Knight") ~printer:string_of_int;
+  assert_equal 3 (material "W_Knight") ~printer:string_of_int
+
+let test_material_queen _ =
+  assert_equal 9 (material "B_Queen") ~printer:string_of_int;
+  assert_equal 9 (material "W_Queen") ~printer:string_of_int
+
+let test_material_unexpected _ =
+  assert_equal 0 (material "B_King") ~printer:string_of_int;
+  assert_equal 0 (material "W_King") ~printer:string_of_int
+
+let test_material_unexpected_characters _ =
+  assert_equal 0 (material "W_Zebra") ~printer:string_of_int
+
+let test_material_partial_input _ =
+  assert_equal 0 (material "Pawn") ~printer:string_of_int
+
+let test_capture_white_pieces _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(2) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  update_captures board 0 0;
+  update_captures board 0 2;
+  update_captures board 0 4;
+  assert_equal ~msg:"Should capture three white pieces" 3
+    (List.length !captured_W);
+  assert_equal ~msg:"White Bishop should be first" "W_Bishop"
+    (List.hd !captured_W)
+
+let test_capture_black_pieces _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(2) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  update_captures board 0 1;
+  update_captures board 0 3;
+  assert_equal ~msg:"Should capture two black pieces" 2
+    (List.length !captured_B);
+  assert_bool "Knight should be in captured list"
+    (List.exists (fun x -> x = "B_Knight") !captured_B)
+
+let test_sorting_mechanism _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(2) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  update_captures board 0 4;
+  update_captures board 0 0;
+  assert_equal ~msg:"Bishop should be before Rook due to value"
+    [ "W_Bishop"; "W_Rook" ] !captured_W
+
+let test_no_piece_present _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(2) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  update_captures board 7 7;
+  assert_equal ~msg:"No pieces should be captured" 0
+    (List.length !captured_W + List.length !captured_B)
+
+let test_capture_at_edge _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(7) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  update_captures board 0 7;
+  assert_equal ~msg:"Edge piece captured" 1 (List.length !captured_W)
+
+let test_capture_at_corner_B _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(7).(0) <- Some "B_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(7) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  update_captures board 7 0;
+  assert_equal ~msg:"Corner piece captured" 1 (List.length !captured_B)
+
+let test_capture_at_corner_W _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(7).(0) <- Some "B_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(7) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  update_captures board 7 0;
+  assert_equal ~msg:"Corner piece captured" 0 (List.length !captured_W)
+
+let test_capture_amidst_enemies _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(1).(1) <- Some "W_Knight";
+  board.(1).(2) <- Some "B_Queen";
+  board.(1).(3) <- Some "W_Rook";
+  update_captures board 1 1;
+  update_captures board 1 3;
+  assert_equal ~msg:"Captured amidst enemy pieces" 2 (List.length !captured_W)
+
+let test_game_scenario_capture_sequence _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(2).(2) <- Some "W_Bishop";
+  board.(3).(3) <- Some "B_Pawn";
+  board.(4).(4) <- Some "B_Knight";
+  update_captures board 3 3;
+  (* Capture Black Pawn *)
+  update_captures board 4 4;
+  (* Capture Black Knight *)
+  assert_equal ~msg:"Captures after several moves" 2 (List.length !captured_B)
+
+let test_invalid_capture_input _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(0) <- Some "Error";
+  board.(7).(0) <- Some "W_Rook";
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(7) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  assert_raises (Failure "un") (fun () -> update_captures board 0 0)
+
+let test_total_material_empty _ =
+  let captured = [] in
+  assert_equal 0 (total_material captured)
+    ~msg:"Total material should be 0 for empty list"
+
+let test_total_material_single_type _ =
+  let captured = [ "W_Pawn"; "W_Pawn"; "W_Pawn" ] in
+  assert_equal 3 (total_material captured)
+    ~msg:"Total material should correctly sum pawns"
+
+let test_total_material_single_rook _ =
+  let captured = [ "W_Rook" ] in
+  assert_equal 5 (total_material captured)
+    ~msg:"Total material should correctly calculate rook value"
+
+let test_total_material_mixed_types _ =
+  let captured = [ "W_Rook"; "W_Knight"; "W_Bishop"; "W_Pawn" ] in
+  assert_equal
+    (5 + 3 + 3 + 1)
+    (total_material captured)
+    ~msg:"Total material should sum different piece types correctly"
+
+let test_total_material_large_list _ =
+  let captured =
+    [
+      "W_Rook"; "W_Queen"; "W_Rook"; "W_Bishop"; "W_Pawn"; "W_Bishop";
+      "W_Knight"; "W_Pawn";
+    ]
+  in
+  assert_equal
+    (5 + 9 + 5 + 3 + 1 + 3 + 3 + 1)
+    (total_material captured)
+    ~msg:"Total material should handle large lists correctly"
+
+let test_total_material_repeated_pieces _ =
+  let captured = [ "W_Queen"; "W_Queen"; "W_Queen" ] in
+  assert_equal (9 * 3) (total_material captured)
+    ~msg:
+      "Total material should correctly sum multiple instances of the same piece"
+
+let test_equal_material _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(7) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  board.(0).(0) <- Some "W_Bishop";
+  board.(7).(0) <- Some "B_Bishop";
+  update_captures board 0 0;
+  update_captures board 7 0;
+  assert_equal ("same", 0) (material_advantage ())
+
+let test_white_advantage _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(7) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  board.(0).(0) <- Some "W_Bishop";
+  board.(0).(0) <- Some "W_Queen";
+  board.(7).(0) <- Some "B_Knight";
+  update_captures board 0 0;
+  update_captures board 7 0;
+  assert_equal ("W", 6) (material_advantage ())
+
+let test_black_advantage _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(7) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  board.(0).(0) <- Some "W_Bishop";
+  board.(0).(0) <- Some "W_Knight";
+  board.(7).(0) <- Some "B_Queen";
+  update_captures board 0 0;
+  update_captures board 7 0;
+  assert_equal ("B", 6) (material_advantage ())
+
+let test_no_pieces_captured _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(1) <- Some "B_Knight";
+  board.(0).(7) <- Some "W_Queen";
+  board.(0).(3) <- Some "B_Pawn";
+  board.(0).(4) <- Some "W_Bishop";
+  board.(0).(5) <- Some "B_King";
+  board.(0).(0) <- Some "W_Bishop";
+  board.(0).(0) <- Some "W_Knight";
+  board.(7).(0) <- Some "B_Queen";
+  assert_equal ("same", 0) (material_advantage ())
+
+let test_all_pieces_captured _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Queen";
+  board.(0).(1) <- Some "B_Queen";
+  board.(1).(0) <- Some "W_Rook";
+  board.(1).(1) <- Some "B_Rook";
+  update_captures board 0 0;
+  update_captures board 0 1;
+  update_captures board 1 0;
+  update_captures board 1 1;
+  assert_equal ("same", 0) (material_advantage ())
+
+let test_random_captures _ =
+  reset_captures ();
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_Rook";
+  board.(0).(1) <- Some "B_Bishop";
+  update_captures board 0 0;
+  update_captures board 0 1;
+  assert (
+    let _, adv = material_advantage () in
+    adv > 0)
+
 let suite =
   "Chess Game Tests"
   >::: [
@@ -838,6 +1140,31 @@ let suite =
          >:: test_sufficient_material_bishop_and_knight;
          "test_insufficient_material_two_knights_different_sides"
          >:: test_insufficient_material_two_knights_different_sides;
+         "test_capture_white_pieces" >:: test_capture_white_pieces;
+         "test_capture_black_pieces" >:: test_capture_black_pieces;
+         "test_total_material_empty" >:: test_total_material_empty;
+         "test_total_material_single_type" >:: test_total_material_single_type;
+         "test_total_material_single_rook" >:: test_total_material_single_rook;
+         "test_total_material_mixed_types" >:: test_total_material_mixed_types;
+         "test_total_material_large_list" >:: test_total_material_large_list;
+         "test_total_material_repeated_pieces"
+         >:: test_total_material_repeated_pieces;
+         "test_sorting_mechanism" >:: test_sorting_mechanism;
+         "test_no_piece_present" >:: test_no_piece_present;
+         "test_capture_at_edge" >:: test_capture_at_edge;
+         "test_capture_at_corner_W" >:: test_capture_at_corner_W;
+         "test_capture_at_corner_B" >:: test_capture_at_corner_B;
+         "test_capture_amidst_enemies" >:: test_capture_amidst_enemies;
+         "test_invalid_capture_input" >:: test_invalid_capture_input;
+         "test_game_scenario_capture_sequence"
+         >:: test_game_scenario_capture_sequence;
+         "test_equal_material" >:: test_equal_material;
+         "test_equal_material" >:: test_equal_material;
+         "test_white_advantage" >:: test_white_advantage;
+         "test_black_advantage" >:: test_black_advantage;
+         "test_no_pieces_captured" >:: test_no_pieces_captured;
+         "test_all_pieces_captured" >:: test_all_pieces_captured;
+         "test_random_captures" >:: test_random_captures;
        ]
 
 let () = run_test_tt_main suite
