@@ -113,6 +113,9 @@ val promote : int -> int -> string -> unit
 val update_enpassant_captured_state :
   string option array array -> int -> int -> unit
 
+val fifty_move : unit -> bool
+val insufficient_material : string option array array -> bool
+
 (*************************** TESTING FUNCTIONS ****************************)
 
 (** Used only for testing. Updates the curr_state to reflect a move from one

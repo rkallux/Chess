@@ -184,6 +184,15 @@ let test_update_turn_invalid _ =
   turn := "Invalid";
   assert_raises (Failure "") update_turn
 
+let test_update_turn_multiple_changes _ =
+  turn := "W";
+  for _ = 1 to 10 do
+    update_turn ();
+    assert_equal "B" !turn;
+    update_turn ();
+    assert_equal "W" !turn
+  done
+
 let test_bishop_valid_moves_se _ =
   let board = empty_board () in
   board.(4).(4) <- Some "B_Bishop";
@@ -669,6 +678,83 @@ let test_fifty_move_rule _ =
   move_fifty board 100;
   assert_equal "50 move rule" (is_draw board)
 
+let test_fifty_move_rule_just_before _ =
+  last_pawn_or_capture := 99;
+  assert_bool "50 move rule should not yet apply" (not (fifty_move ()))
+
+let test_fifty_move_rule_exactly _ =
+  last_pawn_or_capture := 100;
+  assert_bool "50 move rule should now apply" (fifty_move ())
+
+let test_insufficient_material_kings_only _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(7).(7) <- Some "W_King";
+  assert_bool "Should be insufficient material with only two kings"
+    (insufficient_material board)
+
+let test_insufficient_material_king_and_bishop _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(0).(1) <- Some "W_Bishop";
+  board.(7).(7) <- Some "W_King";
+  assert_bool
+    "Should be insufficient material with a king and bishop against a king"
+    (insufficient_material board)
+
+let test_insufficient_material_king_and_knight _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(0).(1) <- Some "W_Knight";
+  board.(7).(7) <- Some "W_King";
+  assert_bool
+    "Should be insufficient material with a king and knight against a king"
+    (insufficient_material board)
+
+let test_sufficient_material_queen _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(0).(1) <- Some "W_Queen";
+  board.(7).(7) <- Some "W_King";
+  assert_bool "Should not be insufficient material with a queen on board"
+    (not (insufficient_material board))
+
+let test_sufficient_material_multiple_pieces _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(0).(1) <- Some "W_Rook";
+  board.(1).(1) <- Some "B_Bishop";
+  board.(7).(7) <- Some "W_King";
+  assert_bool "Should not be insufficient material with multiple major pieces"
+    (not (insufficient_material board))
+
+let test_sufficient_material_bishop_and_knight _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(0).(1) <- Some "W_Bishop";
+  board.(0).(2) <- Some "W_Knight";
+  board.(7).(7) <- Some "W_King";
+  assert_bool "Bishop and knight against king should be sufficient material"
+    (not (insufficient_material board))
+
+let test_sufficient_material_rook_and_knight _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(0).(1) <- Some "W_Rook";
+  board.(0).(2) <- Some "W_Knight";
+  board.(7).(7) <- Some "W_King";
+  assert_bool "Rook and knight should be considered sufficient material"
+    (not (insufficient_material board))
+
+let test_insufficient_material_two_knights_different_sides _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "B_King";
+  board.(0).(1) <- Some "W_Knight";
+  board.(1).(0) <- Some "B_Knight";
+  board.(7).(7) <- Some "W_King";
+  assert_bool "Knights on different sides should still be insufficient"
+    (insufficient_material board)
+
 let suite =
   "Chess Game Tests"
   >::: [
@@ -683,6 +769,8 @@ let suite =
          "test_update_turn_white_to_black" >:: test_update_turn_white_to_black;
          "test_update_turn_black_to_white" >:: test_update_turn_black_to_white;
          "test_update_turn_invalid" >:: test_update_turn_invalid;
+         "test_update_turn_multiple_changes"
+         >:: test_update_turn_multiple_changes;
          "test_enpassant_capture" >:: test_enpassant_capture;
          "test_no_enpassant_capture" >:: test_no_enpassant_capture;
          "test_castling_valid" >:: test_castling_valid;
@@ -733,6 +821,23 @@ let suite =
          "test_material_unexpected_characters"
          >:: test_material_unexpected_characters;
          "test_material_partial_input" >:: test_material_partial_input;
+         "test_fifty_move_rule_just_before" >:: test_fifty_move_rule_just_before;
+         "test_fifty_move_rule_exactly" >:: test_fifty_move_rule_exactly;
+         "test_insufficient_material_kings_only"
+         >:: test_insufficient_material_kings_only;
+         "test_insufficient_material_king_and_bishop"
+         >:: test_insufficient_material_king_and_bishop;
+         "test_insufficient_material_king_and_knight"
+         >:: test_insufficient_material_king_and_knight;
+         "test_sufficient_material_queen" >:: test_sufficient_material_queen;
+         "test_sufficient_material_multiple_pieces"
+         >:: test_sufficient_material_multiple_pieces;
+         "test_sufficient_material_rook_and_knight"
+         >:: test_sufficient_material_rook_and_knight;
+         "test_sufficient_material_bishop_and_knight"
+         >:: test_sufficient_material_bishop_and_knight;
+         "test_insufficient_material_two_knights_different_sides"
+         >:: test_insufficient_material_two_knights_different_sides;
        ]
 
 let () = run_test_tt_main suite
