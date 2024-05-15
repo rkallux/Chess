@@ -133,4 +133,16 @@ val reset_states : unit -> unit
    capture. *)
 val last_pawn_or_capture : int ref
 
+val piece_valid_moves :
+  string option array array -> string -> int -> int -> (int * int) list
+
+val add_valid_sqs :
+  (string option array array -> string -> int -> int -> 'a list) ->
+  string option array array ->
+  string ->
+  'a list ->
+  int ->
+  int ->
+  'a list
+
 (*************************** TESTING FUNCTIONS ****************************)
