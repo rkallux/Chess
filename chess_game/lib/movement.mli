@@ -78,10 +78,6 @@ val checkmated : string option array array -> bool
     false otherwise*)
 val is_draw : string option array array -> string
 
-(** [is_draw state] gives the reason of the draw if there is a draw and "no"
-    otherwise*)
-val is_draw_test : string option array array -> unit
-
 (** [is_valid_castle state s_row s_col e_row e_col] is true if the player has
     clicked on two legal squares for castling. *)
 val is_valid_castle :

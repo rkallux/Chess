@@ -22,6 +22,7 @@ let curr_state =
   |]
 
 let next_state = ref (Array.map Array.copy curr_state)
+let past_states = ref []
 
 (* Top of the file: define the structure to store the last move's details *)
 let last_move = ref ("", (-1, -1), (-1, -1), false)
@@ -53,7 +54,6 @@ let is_enpassant state pr pc er ec =
   piece.[0] <> last_piece.[0]
 
 let update_enpassant_captured_state curr_state r c = curr_state.(r).(c) <- None
-let past_states = ref []
 
 let add_state pos =
   let rec contains lst elem =
@@ -61,12 +61,15 @@ let add_state pos =
     | [] -> false
     | h :: t -> if fst h = elem then true else contains t elem
   in
-  if contains !past_states pos then
+  if contains !past_states pos then (
     past_states :=
       List.map
         (fun (st, ct) -> if st = pos then (st, ct + 1) else (st, ct))
-        !past_states
-  else past_states := (pos, 1) :: !past_states
+        !past_states;
+    print_endline "+1")
+  else (
+    past_states := (pos, 1) :: !past_states;
+    print_endline "new state")
 
 let string_of_state state =
   Array.fold_left
@@ -118,6 +121,7 @@ let update_state state pr pc er ec =
   state.(er).(ec) <- state.(pr).(pc);
   state.(pr).(pc) <- None;
   if state = curr_state && piece <> "" then (
+    add_state (Array.map Array.copy curr_state);
     last_move := (piece, (pr, pc), (er, ec), is_two_square_move);
     (* Handle en passant capture *)
     if abs (pr - er) = 1 && abs (pc - ec) = 1 && piece.[2] = 'P' then
@@ -493,7 +497,6 @@ let promote row col piece = curr_state.(row).(col) <- Some piece
 let play_turn p =
   if p then (
     update_turn ();
-    add_state (Array.map Array.copy curr_state);
     last_pawn_or_capture := !last_pawn_or_capture + 1;
     true)
   else false
@@ -618,13 +621,6 @@ let is_draw state =
   else if three_fold !past_states then "Draw by Repetition"
   else if insufficient_material state then "Insufficient Material"
   else "no"
-
-let is_draw_test state =
-  if fifty_move () then print_endline "50 move rule"
-  else if stalemated state then print_endline "S rule"
-  else if three_fold !past_states then print_endline "R rule"
-  else if insufficient_material state then print_endline "I rule"
-  else print_endline "no"
 
 let reset_states () =
   past_states := [];

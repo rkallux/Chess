@@ -1248,24 +1248,34 @@ let test_get_piece_square_check_last_position _ =
   let result = get_piece_square board "W_Pawn" 0 0 in
   assert_equal (7, 7) result ~msg:"Should return (7, 7) if no W_Pawn found"
 
-(* let test_threefold_repetition_draw _ = reset_states (); let board =
-   empty_board () in
+let test_threefold_repetition_draw _ =
+  reset_states ();
+  let board = empty_board () in
 
-   (* Place kings and rooks to ensure legal moves are available *) board.(0).(0)
-   <- Some "W_King"; board.(0).(1) <- Some "W_Rook"; board.(7).(7) <- Some
-   "B_King"; board.(7).(6) <- Some "B_Rook";
+  board.(0).(0) <- Some "W_King";
+  board.(0).(1) <- Some "W_Rook";
+  board.(7).(7) <- Some "B_King";
+  board.(7).(6) <- Some "B_Rook";
 
-   (* Define moves that lead to threefold repetition but keep other pieces with
-   legal moves *) let moves = [ (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5,
-   7, 6); (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5, 7, 6); (0, 1, 0, 2);
-   (7, 6, 7, 5); (0, 1, 0, 2); ] in
+  (* Define moves that lead to threefold repetition but keep other pieces with
+     legal moves *)
+  let moves =
+    [
+      (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5, 7, 6); (0, 1, 0, 2);
+      (7, 6, 7, 5); (0, 2, 0, 1); (7, 5, 7, 6); (0, 1, 0, 2); (7, 6, 7, 5);
+      (0, 1, 0, 2);
+    ]
+  in
 
-   List.iter (fun (sr, sc, er, ec) -> update_currstate sr sc er ec; (* Update
-   current state tracking if used *) update_state board sr sc er ec) (* Apply
-   the move to the board *) moves;
+  List.iter
+    (fun (sr, sc, er, ec) ->
+      update_currstate sr sc er ec;
+      (* Update current state tracking if used *) update_state board sr sc er ec)
+    (* Apply the move to the board *) moves;
 
-   let result = is_draw board in assert_equal "Draw by Repetition" result
-   ~msg:"Game should be a\n draw due to threefold repetition" *)
+  let result = is_draw board in
+  assert_equal "Draw by Repetition" result
+    ~msg:"Game should be a\n draw due to threefold repetition"
 
 let test_pawn_promotion_to_queen _ =
   make_currstate_empty ();
@@ -1404,8 +1414,7 @@ let suite =
          "test_total_material_large_list" >:: test_total_material_large_list;
          "test_total_material_repeated_pieces"
          >:: test_total_material_repeated_pieces;
-         (* "test_threefold_repetition_draw" >::
-            test_threefold_repetition_draw; *)
+         "test_threefold_repetition_draw" >:: test_threefold_repetition_draw;
          "test_pawn_promotion_valid" >:: test_pawn_promotion_valid;
          "test_king_escape_by_blocking" >:: test_king_escape_by_blocking;
          "test_castling_through_attack" >:: test_castling_through_attack;
