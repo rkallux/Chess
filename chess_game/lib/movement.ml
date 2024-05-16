@@ -22,7 +22,7 @@ let curr_state =
   |]
 
 let next_state = ref (Array.map Array.copy curr_state)
-let past_states = ref []
+let past_states = ref [ (Array.map Array.copy curr_state, 1) ]
 
 (* Top of the file: define the structure to store the last move's details *)
 let last_move = ref ("", (-1, -1), (-1, -1), false)
