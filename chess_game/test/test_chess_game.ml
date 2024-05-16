@@ -1248,9 +1248,6 @@ let test_get_piece_square_check_last_position _ =
   let result = get_piece_square board "W_Pawn" 0 0 in
   assert_equal (7, 7) result ~msg:"Should return (7, 7) if no W_Pawn found"
 
-(* Test Threefold Repetition Rule *)
-(*  *)
-
 (* let test_threefold_repetition_draw _ = reset_states (); let board =
    empty_board () in
 
