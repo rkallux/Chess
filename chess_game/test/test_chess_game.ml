@@ -1251,8 +1251,9 @@ let test_get_piece_square_check_last_position _ =
 (* let test_threefold_repetition_draw _ = reset_states (); let board =
    empty_board () in
 
-   board.(0).(0) <- Some "W_King"; board.(0).(1) <- Some "W_Rook"; board.(7).(7)
-   <- Some "B_King"; board.(7).(6) <- Some "B_Rook";
+   update_states board 0 0 (Some "W_King"); update_states board 0 1 (Some
+   "W_Rook"); update_states board 7 7 (Some "B_King"); update_states board 7 6
+   (Some "B_Rook");
 
    (* Define moves that lead to threefold repetition but keep other pieces with
    legal moves *) let moves = [ (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5,
