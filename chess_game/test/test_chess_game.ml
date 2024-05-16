@@ -1267,8 +1267,8 @@ let test_get_piece_square_check_last_position _ =
    current state tracking if used *) update_state board sr sc er ec) (* Apply
    the move to the board *) moves;
 
-   let result = is_draw board in assert_equal "no" result ~msg:"Game should be a
-   draw due to threefold repetition" *)
+   let result = is_draw board in assert_equal "Draw by Repetition" result
+   ~msg:"Game should be a\n draw due to threefold repetition" *)
 
 let test_pawn_promotion_to_queen _ =
   make_currstate_empty ();
