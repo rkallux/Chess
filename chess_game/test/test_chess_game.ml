@@ -1248,24 +1248,29 @@ let test_get_piece_square_check_last_position _ =
   let result = get_piece_square board "W_Pawn" 0 0 in
   assert_equal (7, 7) result ~msg:"Should return (7, 7) if no W_Pawn found"
 
-(* let test_threefold_repetition_draw _ = reset_states (); let board =
-   empty_board () in
+let test_threefold_repetition_draw _ =
+  reset_states ();
+  let board = empty_board () in
 
-   update_states board 0 0 (Some "W_King"); update_states board 0 1 (Some
-   "W_Rook"); update_states board 7 7 (Some "B_King"); update_states board 7 6
-   (Some "B_Rook");
+  update_states board 0 0 (Some "W_King");
+  update_states board 0 1 (Some "W_Rook");
+  update_states board 7 7 (Some "B_King");
+  update_states board 7 6 (Some "B_Rook");
 
-   (* Define moves that lead to threefold repetition but keep other pieces with
-   legal moves *) let moves = [ (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5,
-   7, 6); (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5, 7, 6); (0, 1, 0, 2);
-   (7, 6, 7, 5); (0, 1, 0, 2); ] in
+  (* Define moves that lead to threefold repetition but keep other pieces with
+     legal moves *)
+  let moves =
+    [
+      (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5, 7, 6); (0, 1, 0, 2);
+      (7, 6, 7, 5); (0, 2, 0, 1); (7, 5, 7, 6); (0, 1, 0, 2); (7, 6, 7, 5);
+    ]
+  in
 
-   List.iter (fun (sr, sc, er, ec) -> update_currstate sr sc er ec; (* Update
-   current state tracking if used *) update_state board sr sc er ec) (* Apply
-   the move to the board *) moves;
+  List.iter (fun (sr, sc, er, ec) -> update_state curr_state sr sc er ec) moves;
 
-   let result = is_draw board in assert_equal "Draw by Repetition" result
-   ~msg:"Game should be a\n draw due to threefold repetition" *)
+  let result = is_draw board in
+  assert_equal "Draw by Repetition" result
+    ~msg:"Game should be a\n draw due to threefold repetition"
 
 let test_pawn_promotion_to_queen _ =
   make_currstate_empty ();
@@ -1318,7 +1323,7 @@ let test_castling_invalid_attacked_path _ =
   board.(7).(0) <- Some "W_Rook";
   board.(7).(5) <- Some "B_Rook";
   let castling_result = is_valid_castle board 7 4 7 2 in
-  assert_bool "Queenside castling should be invalid when c1 (c8) is attacked"
+  assert_bool "Queenside castling should be invalid when c1 is attacked"
     (not castling_result)
 
 let test_castling_with_pieces_between _ =
@@ -1383,6 +1388,29 @@ let test_queen_blocked_by_piece _ =
     (not (is_valid_move board "W_Queen" 4 4 4 7));
   assert_bool "Queen should not jump over pieces diagonally"
     (not (is_valid_move board "W_Queen" 4 4 6 6))
+
+let test_block_to_stop_check _ =
+  reset_states ();
+  make_currstate_empty ();
+  let board = empty_board () in
+  update_states board 5 4 (Some "W_King");
+  update_states board 2 3 (Some "W_Queen");
+  update_states board 5 0 (Some "B_Rook");
+  assert_bool "Queen cannot move to any square" (not (valid_move board 2 3 2 6));
+  assert_bool "Queen can move to square that blocks check"
+    (valid_move board 2 3 5 3)
+
+let test_capture_to_stop_check _ =
+  reset_states ();
+  make_currstate_empty ();
+  let board = empty_board () in
+  update_states board 2 3 (Some "W_King");
+  update_states board 3 5 (Some "W_Bishop");
+  update_states board 0 2 (Some "B_Knight");
+  assert_bool "Bishop cannot move to any square"
+    (not (valid_move board 3 5 5 7));
+  assert_bool "Bishop can move to square captures knight"
+    (valid_move board 3 5 0 2)
 
 let suite =
   "Chess Game Tests"
@@ -1486,8 +1514,7 @@ let suite =
          >:: test_total_material_repeated_pieces;
          "test_castling_with_pieces_between"
          >:: test_castling_with_pieces_between;
-         (* "test_threefold_repetition_draw" >::
-            test_threefold_repetition_draw; *)
+         "test_threefold_repetition_draw" >:: test_threefold_repetition_draw;
          "test_pawn_promotion_valid" >:: test_pawn_promotion_valid;
          "test_king_escape_by_blocking" >:: test_king_escape_by_blocking;
          "test_castling_through_attack" >:: test_castling_through_attack;
@@ -1531,6 +1558,8 @@ let suite =
          >:: test_get_piece_square_multiple_pieces;
          "test_get_piece_square_check_last_position"
          >:: test_get_piece_square_check_last_position;
+         "test_block__to_stop_check" >:: test_block_to_stop_check;
+         "test_capture__to_stop_check" >:: test_capture_to_stop_check;
        ]
 
 let () = run_test_tt_main suite

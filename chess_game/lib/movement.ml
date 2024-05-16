@@ -620,7 +620,7 @@ let is_draw state =
   else "no"
 
 let reset_states () =
-  past_states := [];
+  past_states := [ (Array.map Array.copy curr_state, 1) ];
   turn := "W";
   last_pawn_or_capture := 0;
   captured_B := [];
