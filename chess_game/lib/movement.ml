@@ -61,15 +61,12 @@ let add_state pos =
     | [] -> false
     | h :: t -> if fst h = elem then true else contains t elem
   in
-  if contains !past_states pos then (
+  if contains !past_states pos then
     past_states :=
       List.map
         (fun (st, ct) -> if st = pos then (st, ct + 1) else (st, ct))
-        !past_states;
-    print_endline "+1")
-  else (
-    past_states := (pos, 1) :: !past_states;
-    print_endline "new state")
+        !past_states
+  else past_states := (pos, 1) :: !past_states
 
 let string_of_state state =
   Array.fold_left
