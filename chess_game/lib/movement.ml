@@ -68,6 +68,28 @@ let add_state pos =
         !past_states
   else past_states := (pos, 1) :: !past_states
 
+let string_of_state state =
+  Array.fold_left
+    (fun acc row ->
+      acc ^ "|"
+      ^ Array.fold_left
+          (fun acc piece ->
+            acc
+            ^
+            match piece with
+            | Some p -> p ^ " "
+            | None -> "Empty ")
+          "" row
+      ^ "|\n")
+    "" state
+
+(* Function to print all past states and their counts *)
+let print_past_states () =
+  List.iter
+    (fun (state, count) ->
+      Printf.printf "State:\n%sCount: %d\n\n" (string_of_state state) count)
+    !past_states
+
 let rec three_fold past =
   match past with
   | [] -> false
@@ -596,6 +618,13 @@ let is_draw state =
   else if three_fold !past_states then "Draw by Repetition"
   else if insufficient_material state then "Insufficient Material"
   else "no"
+
+let is_draw_test state =
+  if fifty_move () then print_endline "50 move rule"
+  else if stalemated state then print_endline "S rule"
+  else if three_fold !past_states then print_endline "R rule"
+  else if insufficient_material state then print_endline "I rule"
+  else print_endline "no"
 
 let reset_states () =
   past_states := [];

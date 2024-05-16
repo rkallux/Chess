@@ -1248,6 +1248,73 @@ let test_get_piece_square_check_last_position _ =
   let result = get_piece_square board "W_Pawn" 0 0 in
   assert_equal (7, 7) result ~msg:"Should return (7, 7) if no W_Pawn found"
 
+(* Test Threefold Repetition Rule *)
+(*  *)
+
+(* let test_threefold_repetition_draw _ = reset_states (); let board =
+   empty_board () in
+
+   (* Place kings and rooks to ensure legal moves are available *) board.(0).(0)
+   <- Some "W_King"; board.(0).(1) <- Some "W_Rook"; board.(7).(7) <- Some
+   "B_King"; board.(7).(6) <- Some "B_Rook";
+
+   (* Define moves that lead to threefold repetition but keep other pieces with
+   legal moves *) let moves = [ (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5,
+   7, 6); (0, 1, 0, 2); (7, 6, 7, 5); (0, 2, 0, 1); (7, 5, 7, 6); (0, 1, 0, 2);
+   (7, 6, 7, 5); (0, 1, 0, 2); ] in
+
+   List.iter (fun (sr, sc, er, ec) -> update_currstate sr sc er ec; (* Update
+   current state tracking if used *) update_state board sr sc er ec) (* Apply
+   the move to the board *) moves;
+
+   let result = is_draw board in assert_equal "no" result ~msg:"Game should be a
+   draw due to threefold repetition" *)
+
+let test_pawn_promotion_to_queen _ =
+  make_currstate_empty ();
+  let board = empty_board () in
+  board.(1).(0) <- Some "W_Pawn";
+  board.(0).(0) <- Some "W_Pawn";
+  board.(1).(0) <- None;
+  curr_state.(0).(0) <- board.(0).(0);
+  promote 0 0 "W_Queen";
+  board.(0).(0) <- curr_state.(0).(0);
+  assert_equal (Some "W_Queen")
+    curr_state.(0).(0)
+    ~msg:"curr_state should show the pawn promoted to Queen at (0,0)";
+  assert_equal (Some "W_Queen")
+    board.(0).(0)
+    ~msg:"Local board should show the pawn promoted to Queen at (0,0)"
+
+let test_king_escape_by_blocking _ =
+  let board = empty_board () in
+  board.(0).(4) <- Some "B_King";
+  board.(7).(4) <- Some "W_Rook";
+  board.(1).(4) <- Some "B_Pawn";
+  let valid = is_valid_move board "B_Pawn" 1 4 2 4 in
+  assert_bool "Pawn moves to block check, should be valid" valid;
+  let still_in_check = in_check board in
+  assert_bool "King should not be in check\n   after pawn blocks"
+    (not still_in_check)
+
+let test_castling_through_attack _ =
+  reset_states ();
+  let board = empty_board () in
+  board.(7).(4) <- Some "W_King";
+  board.(7).(0) <- Some "W_Rook";
+  board.(7).(3) <- None;
+  board.(0).(3) <- Some "B_Rook";
+  assert_bool "Castling through attack should be invalid"
+    (not (is_valid_castle board 7 4 7 2))
+
+let test_insufficient_material_king_knight _ =
+  let board = empty_board () in
+  board.(0).(0) <- Some "W_King";
+  board.(7).(7) <- Some "B_King";
+  board.(0).(1) <- Some "W_Knight";
+  assert_bool "King and Knight vs King should be a draw"
+    (insufficient_material board)
+
 let suite =
   "Chess Game Tests"
   >::: [
@@ -1269,7 +1336,7 @@ let suite =
          "test_castling_valid" >:: test_castling_valid;
          "test_castling_invalid_through_check"
          >:: test_castling_invalid_through_check;
-         "test_pawn_promotion_valid" >:: test_pawn_promotion_valid;
+         "test_pawn_promotion_valid" >:: test_pawn_promotion_to_queen;
          "test_bishop_valid_moves" >:: test_bishop_valid_moves;
          "test_king_in_check" >:: test_king_in_check; "test pins" >:: test_pins;
          "test_checkmate" >:: test_checkmate;
@@ -1340,6 +1407,13 @@ let suite =
          "test_total_material_large_list" >:: test_total_material_large_list;
          "test_total_material_repeated_pieces"
          >:: test_total_material_repeated_pieces;
+         (* "test_threefold_repetition_draw" >::
+            test_threefold_repetition_draw; *)
+         "test_pawn_promotion_valid" >:: test_pawn_promotion_valid;
+         "test_king_escape_by_blocking" >:: test_king_escape_by_blocking;
+         "test_castling_through_attack" >:: test_castling_through_attack;
+         "test_insufficient_material_king_knight"
+         >:: test_insufficient_material_king_knight;
          "test_sorting_mechanism" >:: test_sorting_mechanism;
          "test_no_piece_present" >:: test_no_piece_present;
          "test_capture_at_edge" >:: test_capture_at_edge;
