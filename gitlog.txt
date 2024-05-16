@@ -1,0 +1,785 @@
+commit 1aa5d6ee3352e671e9ec3fb407fd160200287585
+Author: Alexander He <adh236@cornell.edu>
+Date:   Thu May 16 10:28:54 2024 -0400
+
+    Added authors and test plan
+
+commit 87cff91a0455b454c0c8d33a571b72c2c08c88ea
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu May 16 03:50:31 2024 -0400
+
+    Test stop checks
+
+commit 3f312878f1a100092fc3883e5f1e737032be7fc0
+Merge: 0409ea0 25ca1d5
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Thu May 16 00:08:25 2024 -0400
+
+    Added Edgecase tests
+
+commit 0409ea04deb3411c83d33bb84f3d5b7197f0deaa
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Thu May 16 00:04:51 2024 -0400
+
+    Added Edgecase tests
+
+commit 25ca1d55ea882855239c77023c599fdaab0c2e58
+Author: Matthew <mcl244@cornell.edu>
+Date:   Wed May 15 23:58:51 2024 -0400
+
+    Test three move draw
+
+commit 6e1473103ecb65123cbbe4407f969316d6fdf336
+Author: Matthew <mcl244@cornell.edu>
+Date:   Wed May 15 23:49:09 2024 -0400
+
+    remove prints
+
+commit ecd1974e4a559eaf9af7315e962b5d25a552f196
+Author: Matthew <mcl244@cornell.edu>
+Date:   Wed May 15 23:46:12 2024 -0400
+
+    Fix 3 move draw bug
+
+commit 3e3476e0d36a661f0e3fc99b88b1c768f14722a1
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Wed May 15 22:55:00 2024 -0400
+
+    3 move repetion
+
+commit 5f7d6aa44af0e81aee0a70b5873d7e5e9a1a9bc0
+Merge: e190218 60c0021
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Wed May 15 22:53:20 2024 -0400
+
+    Merge remote-tracking branch 'refs/remotes/origin/main'
+
+commit e1902180504bcbb3219475a149cbf542d7f74252
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Wed May 15 22:52:37 2024 -0400
+
+    Three-fold repetion
+
+commit 60c00215684bdd17f4c09c9acce922474943c1f9
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 15 22:06:03 2024 -0400
+
+    Remove im.ml redundant file
+
+commit 0598dce82bc1d184849e2cbab2d976bbce9d4e1c
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Wed May 15 21:28:38 2024 -0400
+
+    Added test cases, modified movements.mli to reflect the correct functions
+
+commit 923ed3908f15d3fcd2a84ab1c824374973c74cb8
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 15 02:24:08 2024 -0400
+
+    Add piece square tests
+
+commit bac539e9b9acb5b77be345ec5a3d790781c6c71b
+Merge: dd4a98d aa215ba
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 15 02:16:42 2024 -0400
+
+    Merge branch 'main' of github.coecis.cornell.edu:adh236/CS3110-Final_Project
+
+commit dd4a98db6df3ae2235cbe7f91c0dc2771232a5eb
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 15 02:16:08 2024 -0400
+
+    Add valid moves tests
+
+commit aa215ba9fa8011273bf452683a2e3142f39a77a1
+Merge: 84fd804 85e8a5b
+Author: Matthew <mcl244@cornell.edu>
+Date:   Wed May 15 02:10:57 2024 -0400
+
+    add pin test
+
+commit 84fd804bbeadbd5536487a1cabd37e6f7f225a64
+Author: Matthew <mcl244@cornell.edu>
+Date:   Wed May 15 02:04:35 2024 -0400
+
+    Add pin test
+
+commit 85e8a5be35c30dfe905f488217dd4d50ee59d4e5
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 15 02:02:39 2024 -0400
+
+    Piece validity tests
+
+commit 33091d8099b34c9ce05312372cdbb89c9e763654
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 15 01:31:46 2024 -0400
+
+    Material tests
+
+commit f2fb112b5268c2932b706df317b7931ecfc3648e
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Tue May 14 22:48:40 2024 -0400
+
+    Add insufficient material tests
+
+commit d1f0db41f2b22c1f1ebdaa65668d3f4191ca4638
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Tue May 14 22:21:18 2024 -0400
+
+    Extend current tests
+
+commit b2701a878cdb298ca8224fca1da70635aab97036
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Tue May 14 21:50:06 2024 -0400
+
+    Bishop test
+
+commit 1010f7bb8e40ee863edf3f03f6f77d66c700155d
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sun May 12 23:16:57 2024 -0400
+
+    Test checkmate, 50 move
+
+commit ed48a79567fdeccbf4c3094b63e70f03e09fcb85
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sun May 12 22:12:52 2024 -0400
+
+    Fix bugs
+    
+    Fixed bug with testing castling. Fixed bug with end of game state not working correctly with castles and draws.
+
+commit 2c80372cd622a885f99a25ed36e0f0190e20a1f7
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Sun May 12 17:52:44 2024 -0400
+
+    Tested castling, stalemate, check, insufficient material, pawn promotion
+
+commit bf3cd984c91c561aa039158d0bb4a80d439009af
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Sun May 12 16:45:20 2024 -0400
+
+    Added enpassant tests
+
+commit d4de60b11d2ccf073e1a9867706bb4b212fac7c2
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Sat May 11 22:06:15 2024 -0400
+
+    Added game_end gui for draws
+
+commit 0be501b561d5b8c5e3af3e191ed43f2f8cd701a2
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Sat May 11 17:34:12 2024 -0400
+
+    Added Checkmate GUI
+
+commit 3279c82e656408485c862b218eee721b47f9616c
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Fri May 10 20:58:20 2024 -0400
+
+    Added lines of code to piece validity check
+
+commit ba914da1c90b1011e397a3b536d14ab8541f6faf
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Fri May 10 15:55:22 2024 -0400
+
+    Added curr_state to function parameters for testing
+
+commit e6210feec1d9fc1d31104cca195055bd5d984a2f
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Fri May 10 15:39:16 2024 -0400
+
+    Wrote material tests
+
+commit 8c5be606f8aa98104ab4a1074904c3bda33c9431
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Fri May 10 14:58:37 2024 -0400
+
+    Implement testing for conventional moves
+
+commit e0db93f1b1348f3a8912d46a67ab39b057673c5a
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Fri May 10 13:34:45 2024 -0400
+
+    Initial tests
+
+commit d28160baac634826951fb9d170e6ae3766be69ff
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Fri May 10 13:33:43 2024 -0400
+
+    Initial tests
+
+commit 64b5e0dfaffc908660a6f585864f0fe90e94b101
+Author: Alexander He <adh236@cornell.edu>
+Date:   Thu May 9 22:57:55 2024 -0400
+
+    Will reset past_states when capture occurs
+    
+    - makes array slightly smaller so faster
+    - removed print statements
+
+commit 11f30f5fccd1dbcca56c14450256ffc64e28b1cb
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu May 9 22:52:05 2024 -0400
+
+    Fix draw bug
+
+commit 600917194336a0743e7c86bb7126480a7b14cf30
+Author: Alexander He <adh236@cornell.edu>
+Date:   Thu May 9 21:02:10 2024 -0400
+
+    Impelemted drawing cases: 50 move, stalemate, repetition, insufficient material
+    
+    - repetition is buggy right now: always increments count even when states not equal
+    - 50 move: resets counter when piece captured or pawn moves, otherwise increments
+    - insufficient material - one or fewer 3-pt piece only for either side
+    - stalemate - no legal moves but not in check
+
+commit 9d88770842114aea41b1d2f3d466e4535946a9b9
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sat May 4 21:50:53 2024 -0400
+
+    Clean up specifications
+
+commit 99e63ba3a047d6477d61c1bb1d73b8a900f05fd7
+Merge: b1ef4df e531254
+Author: Jay <jt878@cornell.edu>
+Date:   Sat May 4 20:00:49 2024 -0400
+
+    Merge branch 'main' of github.coecis.cornell.edu:adh236/CS3110-Final_Project
+
+commit b1ef4df531055e22253dc3da4e755a09b4c510d8
+Author: Jay <jt878@cornell.edu>
+Date:   Sat May 4 19:56:40 2024 -0400
+
+    Implement movement.mli and test.ml
+    
+     - adjusted movement.mli file to include all functions
+     - added new test cases to test movement.ml
+
+commit e531254761b84ed57ee2b135567dc67bdb336bfb
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sat May 4 18:13:09 2024 -0400
+
+    Update castle
+    
+    Can no longer castle through checks.
+
+commit 84f0c2634d3327229c6ce9819eebdbe6c558da79
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sat May 4 17:42:25 2024 -0400
+
+    Implement checkmate
+
+commit 15abdac7e80b5d63e54663798ced880e2e8a651f
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sat May 4 01:01:31 2024 -0400
+
+    remove prints
+
+commit c5a97ce55c30603b74831a6537064b3326faf563
+Merge: 58e53da d424261
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sat May 4 00:59:47 2024 -0400
+
+    resolve merge conflict
+
+commit 58e53dac6915a59121559551dab291db0253319b
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sat May 4 00:51:37 2024 -0400
+
+    Implement checks
+
+commit d424261355458b34657a39f6a69036ed3774820e
+Merge: d9484a5 ead1f11
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Fri May 3 21:42:28 2024 -0400
+
+    Improved enpassant functionality
+    
+    Merge branch 'main' of github.coecis.cornell.edu:adh236/CS3110-Final_Project
+
+commit d9484a538fe6c24f4208bbc2d2f78d88661b35f8
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Fri May 3 21:38:44 2024 -0400
+
+    Fixed Enpassant Functionality
+    
+     -Improved functionality by adding captured piece to list of captured pieces
+
+commit ead1f11e9c20c698e22b9812ef4e6c87b6e99086
+Merge: ef730f9 f9e9274
+Author: Alexander He <adh236@cornell.edu>
+Date:   Fri May 3 14:21:16 2024 -0400
+
+    updated material advantage
+    
+    -Merge remote-tracking branch 'refs/remotes/origin/main'
+    -ugly white square :((
+
+commit ef730f909043dacf76e95322a706296d101446df
+Author: Alexander He <adh236@cornell.edu>
+Date:   Fri May 3 13:34:23 2024 -0400
+
+    Nothing much
+
+commit f9e92749ab5baafe98ef25ddd68eef37f53c9937
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Fri May 3 11:37:20 2024 -0400
+
+    Fix promotion
+
+commit 0ed379301be443446c92803bbb37e391846bb1a3
+Author: rkallux <rohankalluraya@gmail.com>
+Date:   Thu May 2 21:26:46 2024 -0400
+
+    Added Enpassant Functionality
+    
+     -Implemented enpassant by adding Movement.is_enpassant, the Main GUI implementation
+     -of enpassant and modifying Movement.is_valid_pawn_move
+
+commit 840ede003356f26ef15322d7f4cda5b3800190ad
+Merge: a47a6b8 47f0111
+Author: Alexander He <adh236@cornell.edu>
+Date:   Thu May 2 01:22:38 2024 -0400
+
+    Merge remote-tracking branch 'refs/remotes/origin/main'
+
+commit a47a6b8fa8e2dd6cd23ee6f94ee6be4ee62ef88a
+Author: Alexander He <adh236@cornell.edu>
+Date:   Thu May 2 01:21:16 2024 -0400
+
+    Cleaned up movement
+    
+    -moved functions around
+    -added barriers for grouping
+    -renamed functions
+    -added documentation to mli file
+
+commit 47f0111d85c08bbb2cd064cd7fa93d99a71ea61a
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu May 2 00:54:21 2024 -0400
+
+    put back alex's code
+
+commit 6c1205cd5914b251bb4ce44c71feed6be57420ab
+Merge: 00dde19 8710a06
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu May 2 00:48:31 2024 -0400
+
+    remove prints
+
+commit 00dde19bc5ba7276701fb40aa42ba07a22b4bd8e
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu May 2 00:46:01 2024 -0400
+
+    Delete prints
+
+commit 8710a06fa085fbb6fe98223a4324b829d538ba8a
+Merge: 4b1390c 795bc35
+Author: Alexander He <adh236@cornell.edu>
+Date:   Thu May 2 00:42:38 2024 -0400
+
+    Merge remote-tracking branch 'refs/remotes/origin/main'
+
+commit 4b1390ca3abd365cb4bd7115188142996f998f3a
+Author: Alexander He <adh236@cornell.edu>
+Date:   Thu May 2 00:37:55 2024 -0400
+
+    Cleaned up main
+    
+    -changed some names
+    -new functions that factor out code
+    -didnt touch promotion
+
+commit 795bc35039bb1a8341d100fb76d47fcfb6e6fd17
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu May 2 00:21:30 2024 -0400
+
+    Fix promotion bug
+
+commit 5211db194e4630b4fff7f8ca896107a0810ab2f1
+Merge: 4529c4b 7b5088c
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 1 21:30:28 2024 -0400
+
+    Merge branch 'main' of github.coecis.cornell.edu:adh236/CS3110-Final_Project
+    Add promotion logic
+
+commit 4529c4bde476855a0b5f925625e74f6beef300bd
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 1 21:29:32 2024 -0400
+
+    Add promotion logic
+
+commit 7b5088cb398acda6f7865ee7189ad39b8eb0d6c1
+Merge: 699c94f 94c47df
+Author: Jay <jt878@cornell.edu>
+Date:   Wed May 1 21:20:15 2024 -0400
+
+    Implemented test file
+    Merge branch 'main' of github.coecis.cornell.edu:adh236/CS3110-Final_Project
+
+commit 699c94ff59ded53b7d5bbf75458cb5f3bf61c6e2
+Author: Jay <jt878@cornell.edu>
+Date:   Wed May 1 21:10:33 2024 -0400
+
+    Implement test.ml
+    
+     - Added more test cases for robustness
+
+commit 94c47df6b6479e7b7181c96a1fcf98079189b605
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Wed May 1 16:18:47 2024 -0400
+
+    Temporarily change lin/dune to ignore unused warnings from in_check
+
+commit 8223a8c5938ed293413402db662541aae6187c84
+Author: Matthew <mcl244@cornell.edu>
+Date:   Tue Apr 30 23:05:04 2024 -0400
+
+    Implement detect checks
+    
+    Implement function to detect if a player is in check or not.
+
+commit f05e80a084a3ee87b099ae8f62458629acb54521
+Author: Matthew <mcl244@cornell.edu>
+Date:   Tue Apr 30 18:30:06 2024 -0400
+
+    Improve capture implementation
+
+commit 87d1fdf40bed40d5c2260f22155204ae593cf298
+Author: Matthew <mcl244@cornell.edu>
+Date:   Tue Apr 30 16:07:26 2024 -0400
+
+    Debug piece capture
+    
+    Capturing a piece now properly updates the captured piece tables.
+
+commit c7d8ae290fda98fb357ae63bd43f1ada6515b786
+Merge: e37cc42 c17320b
+Author: Jay <jt878@cornell.edu>
+Date:   Mon Apr 29 18:47:32 2024 -0400
+
+    Merge remote-tracking branch 'refs/remotes/origin/main'
+
+commit e37cc42a02e19b911f1e15a9f7fb9909b01ad619
+Author: Jay <jt878@cornell.edu>
+Date:   Mon Apr 29 18:45:28 2024 -0400
+
+    Implemented test.ml
+    
+     - added test cases for valid moves
+     - test cases for captures and pieces on squares
+
+commit c17320b3922e772fde9d1eb21faa0694e9830b53
+Author: Alexander He <adh236@cornell.edu>
+Date:   Mon Apr 29 15:17:45 2024 -0400
+
+    Material advantage also shows
+    
+    -previous im not deleted
+
+commit 88a8cbef1b80b0057b96b2dc0d84fb1363d3327b
+Merge: 743d1dc d6742c3
+Author: Alexander He <adh236@cornell.edu>
+Date:   Mon Apr 29 00:59:33 2024 -0400
+
+    Merge remote-tracking branch 'refs/remotes/origin/main'
+
+commit 743d1dcada1826318550be05875c6cd4fe3b6e2e
+Author: Alexander He <adh236@cornell.edu>
+Date:   Mon Apr 29 00:55:33 2024 -0400
+
+    Captured pieces now show up on the top and bottom of the board.
+    
+    -old pieces do not get deleted yet (same as button issue earlier)
+    -need to move some functions over to movement
+
+commit d6742c3d96feb77a8c8c355dda2223adbd9bb126
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sun Apr 28 19:37:24 2024 -0400
+
+    Fix merge conflict
+
+commit 4f65a0f8874e8b869edf5f6807c80606f95a0820
+Merge: f8d079e 6ed9700
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sun Apr 28 19:14:43 2024 -0400
+
+    Merge remote-tracking branch 'refs/remotes/origin/main'
+
+commit f8d079e0b5c602f67b64264bf3b52dbd92020feb
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sun Apr 28 19:05:09 2024 -0400
+
+    Implement piece_valid_moves
+    
+    Implements piece_valid_moves in Movement which returns all valid squares a piece can go to.
+
+commit 6ed97000b2eb67fdb274dba4538faff046b397b3
+Author: Alexander He <adh236@cornell.edu>
+Date:   Sun Apr 28 18:23:30 2024 -0400
+
+    Logic for captured pieces, material, whose turn
+    
+    -all in main, probably should be moved
+    -can't figure out gui
+
+commit 852f74d7aa1e2e89616f1b44b13539f84915b87e
+Author: Matthew <mcl244@cornell.edu>
+Date:   Sat Apr 27 01:20:34 2024 -0400
+
+    Implement castle
+    
+    Implemented castle by implementing Movement.can_castle, Movement.castle, and the
+    main GUI implementation for castling (including many helper functions).
+
+commit e44b32d9fcd3281270b40752fb1c57748ddaf3da
+Author: Matthew <mcl244@cornell.edu>
+Date:   Fri Apr 26 00:28:35 2024 -0400
+
+    Start implementation for castle
+    
+    Added array to keep track of rook and king movement to be used for castling.
+
+commit a72a159921562a1f13685d00073ee5fd7ece5554
+Author: Alexander He <adh236@cornell.edu>
+Date:   Thu Apr 25 18:04:55 2024 -0400
+
+    Impelemented logic for turn-based play and capture
+    
+    -every time a player makes a legal move, the next player gets to move
+    -if it is not that player's turn, the pieces won't move
+    -can only land on pieces of the opposite color
+
+commit 09ff2b5d3370c661c3ae276f11a4fae6890ea98f
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu Apr 25 16:18:17 2024 -0400
+
+    Update piece movement
+    
+    Made rooks, bishops, and queens unable to jump over other pieces and pieces also can't move to their own square.
+
+commit 80332f0c394c241ed361e199231bdd66eb486a99
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Mon Apr 22 16:50:11 2024 -0400
+
+    Add specifications to movement functions
+
+commit 407e386661a901a39ebd99c0689967a2c95e722c
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Mon Apr 22 16:33:12 2024 -0400
+
+    Add movement for all pieces
+
+commit 878ec19c268f41ca938ab389457be5dd87bb185a
+Author: Alexander He <adh236@cornell.edu>
+Date:   Fri Apr 19 14:25:23 2024 -0400
+
+    Removes image of piece on previous square when moving to new square
+
+commit 1b06113ff56f56b6888f16802d58c68695c91dc1
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu Mar 28 16:01:43 2024 -0400
+
+    Update yaml, remove extra code
+
+commit 88ad8192974b65fec84123ca06259b06aa18a099
+Author: Matthew <mcl244@cornell.edu>
+Date:   Wed Mar 27 18:09:53 2024 -0400
+
+    Bugfix button click
+
+commit 7a985eb204c2fed5776994f15d99a8bd709f7015
+Author: Matthew <mcl244@cornell.edu>
+Date:   Wed Mar 27 17:57:36 2024 -0400
+
+    Update piece movement
+    
+    Updates state of piece after moving
+
+commit 18834b0b9ef5226d9f13202aecc1bd1ed5503b4c
+Author: Alex He <adh236@cornell.edu>
+Date:   Wed Mar 27 02:42:51 2024 -0400
+
+    Implemented piece movement
+    
+    -does not delete image of previous position of piece
+    -does not update state of game, so movement is purely visual
+    -does not check if piece already existed on that square
+
+commit 64c76441e52db8052ba55260f6ba4469484f661e
+Merge: 85b0fea 0955d0e
+Author: Alex He <adh236@cornell.edu>
+Date:   Tue Mar 26 23:39:25 2024 -0400
+
+    Merge branch 'main' of github.coecis.cornell.edu:adh236/CS3110-Final_Project into main
+
+commit 85b0fea7f29fc7c3c26694a8ec9d43e853331afa
+Author: Alex He <adh236@cornell.edu>
+Date:   Tue Mar 26 23:38:53 2024 -0400
+
+    Added documentation
+    
+    -modified .ocamlformat
+
+commit 0955d0e42b3cb3b41703fe636ec25be68d56a50f
+Author: adh236 <adh236@cornell.edu>
+Date:   Tue Mar 26 22:45:09 2024 -0400
+
+    Create INSTALL.md
+
+commit bcb4cde89e889d21a558eb4c860b4063b576b74c
+Author: adh236 <adh236@cornell.edu>
+Date:   Tue Mar 26 22:37:35 2024 -0400
+
+    Delete README
+
+commit 8b7f49e2ae1a0f55460866fd6a404ec14e46f325
+Author: adh236 <adh236@cornell.edu>
+Date:   Tue Mar 26 22:36:22 2024 -0400
+
+    Create README
+
+commit e63c0b067ad0155c34e064552a98b2e15eb38459
+Author: Matthew <mcl244@cornell.edu>
+Date:   Tue Mar 26 22:35:09 2024 -0400
+
+    Add Readme, yaml file
+
+commit 67ce4d8ef23dd0330ab1506ea857865bbf42b821
+Author: Matthew <mcl244@cornell.edu>
+Date:   Tue Mar 26 22:33:19 2024 -0400
+
+    Add Readme, yaml file
+
+commit 703072493db7cb67317a7b8602eb2710fc878ef3
+Merge: f55cdd6 326a405
+Author: Alex He <adh236@cornell.edu>
+Date:   Tue Mar 26 18:16:28 2024 -0400
+
+    Merge branch 'main' of github.coecis.cornell.edu:adh236/CS3110-Final_Project into main
+
+commit f55cdd652594172038efd3d4564adf8df5c08dc8
+Author: Alex He <adh236@cornell.edu>
+Date:   Tue Mar 26 18:14:09 2024 -0400
+
+    Removed build
+     Please enter the commit message for your changes. Lines starting
+
+commit 326a40527a0f484f9dcb50e5e07a09019b27152a
+Author: Matthew <mcl244@cornell.edu>
+Date:   Tue Mar 26 16:56:35 2024 -0400
+
+    Add home screen
+    
+    Added home screen window. Cleaned up some of code/shifted variables around.
+
+commit 6fc2bfa504e96a2a8ebadd9d0fef3a3f61d22a70
+Author: Matthew <mcl244@cornell.edu>
+Date:   Tue Mar 26 15:04:06 2024 -0400
+
+    Swap board sides
+
+commit cbd909c050143f0b5fab6bc6b4d09dace31ee130
+Author: Matthew <mcl244@cornell.edu>
+Date:   Mon Mar 25 22:40:09 2024 -0400
+
+    Add piece images
+    
+    Added each pieces png to assets folder and put them on the correct square when th
+    e board is initialized.
+
+commit 6843a37dae5441fc16181b0ee91b351ebbddcd55
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Mon Mar 25 15:56:10 2024 -0400
+
+    Create chessboard
+
+commit f1b699332746cce608e7a2766057a839c89fe03d
+Author: Alex He <adh236@cornell.edu>
+Date:   Sun Mar 24 02:10:21 2024 -0400
+
+    Loads in image
+    
+    -file in lib/im.ml
+    -assets also in lib
+    -not sure why width of image is too large
+
+commit 913a6dd11e67b39d2106601512921d05fe5b6a62
+Author: Jay <jt878@cornell.edu>
+Date:   Sat Mar 23 16:43:16 2024 -0400
+
+    Implement main.ml
+    
+     - wrote a demo test to initialize GUI
+
+commit 9fbe84aa1c4135d93ff60681036f60d53efdb572
+Merge: caa4468 22eb1a7
+Author: Matthew <mcl244@cornell.edu>
+Date:   Fri Mar 22 15:56:13 2024 -0400
+
+    Fix merge conflict
+
+commit caa446892298237e6e0b5077ce0e9b1dacff10c4
+Author: Matthew <mcl244@cornell.edu>
+Date:   Fri Mar 22 15:53:55 2024 -0400
+
+    Initialize dune project
+
+commit 22eb1a7d4f263becbce82ac6bccdc87325d17661
+Author: rak298 <rak298@cornell.edu>
+Date:   Thu Mar 7 18:31:32 2024 -0500
+
+    Adding name and net ID
+
+commit 5b9517f59a135d22e5e8e4dc5561c55e355661ed
+Merge: 5bbbf0b d1c0cfd
+Author: Jay <jt878@cornell.edu>
+Date:   Thu Mar 7 17:37:07 2024 -0500
+
+    Merge remote-tracking branch 'refs/remotes/origin/main'
+
+commit 5bbbf0b317d2c5175cf8a784695fe191fa9f1002
+Author: Jay <jt878@cornell.edu>
+Date:   Thu Mar 7 17:32:01 2024 -0500
+
+    Add name and netid
+
+commit d1c0cfd7b277d492f9c5d0c351469564f7130857
+Merge: 322f8fb 1ee9a9e
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Thu Mar 7 17:31:39 2024 -0500
+
+    Add name and netid
+
+commit 322f8fb231d66a9cb31d4364a1d20a13ce51062c
+Author: Joshua Rajendran <jr2322@cornell.edu>
+Date:   Thu Mar 7 17:30:22 2024 -0500
+
+    Add name and netid
+
+commit 1ee9a9e2912ae4330fe32aaf76130a7357815aea
+Merge: 8ff47a5 f6e299d
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu Mar 7 17:29:24 2024 -0500
+
+    Add name and netid
+
+commit 8ff47a5c66775a5f4f5e0f0bce568a950e997fbc
+Author: Matthew <mcl244@cornell.edu>
+Date:   Thu Mar 7 17:28:29 2024 -0500
+
+    Added name and netID
+
+commit f6e299db1518f4ae6cdfb07bd8546ee678d7313c
+Author: Alex He <adh236@cornell.edu>
+Date:   Thu Mar 7 17:27:18 2024 -0500
+
+    Added name and netID
+
+commit f9ce3e680871dfd2a7d19ef564b5daabdc5ab1ec
+Author: adh236 <adh236@cornell.edu>
+Date:   Tue Mar 5 13:27:08 2024 -0500
+
+    Initial commit
