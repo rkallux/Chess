@@ -1,3 +1,6 @@
+(*@authors Jay Talwar (jt878) Joshua Rajendran (jr2322) Matthew Li (mcl244)
+  Alexander He (adh236) Rohan Kalluraya (rak298)*)
+
 open GMain
 open Chess_game
 
