@@ -160,17 +160,17 @@ let endgame_gui checkmate checkmatetext pressok ok =
   ignore (dialog#run ());
   dialog#destroy ()
 
-let turn =
+let turn () =
   match !Movement.turn with
-  | "W" -> "WHITE"
-  | "B" -> "BLACK"
+  | "W" -> "BLACK" (* Current player's turn is in checkmate *)
+  | "B" -> "WHITE"
   | _ -> ""
 
 (* Function to create a square *)
 let check_end_of_game () =
   if Movement.checkmated Movement.curr_state then (
     endgame_gui "Checkmate!"
-      ("Checkmate! Game Over. " ^ turn ^ " WINS!")
+      ("Checkmate! Game Over. " ^ turn () ^ " WINS!")
       "Press OK to close." "OK";
     Main.quit ())
   else if Movement.is_draw Movement.curr_state <> "no" then begin
