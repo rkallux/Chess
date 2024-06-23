@@ -1,10 +1,10 @@
 # CS3110-Final_Project
 
+Rohan Kalluraya(rak298)
 Jay Talwar (jt878)
 Joshua Rajendran (jr2322)
 Matthew Li mcl244
 Alexander He adh236
-Rohan Kalluraya(rak298)
 
 
 This repository contains the final project for CS3110: Functional Programming at Cornell University. The project is a Chess Game implemented in OCaml.
