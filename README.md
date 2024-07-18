@@ -1,5 +1,3 @@
-# CS3110-Final_Project
-
 Rohan Kalluraya(rak298)
 Jay Talwar (jt878)
 Joshua Rajendran (jr2322)
