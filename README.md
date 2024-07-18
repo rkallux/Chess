@@ -5,8 +5,7 @@ Matthew Li mcl244
 Alexander He adh236
 
 
-This repository contains a functional programming implementation of Chess. The project is a Chess Game implemented in OCaml.
-
+This repository contains a functional programming implementation of Chess.
 ## Getting Started
 
 ### Prerequisites
