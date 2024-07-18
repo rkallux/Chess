@@ -5,7 +5,7 @@ Matthew Li mcl244
 Alexander He adh236
 
 
-This repository contains the final project for CS3110: Functional Programming at Cornell University. The project is a Chess Game implemented in OCaml.
+This repository contains a functional programming implementation of Chess. The project is a Chess Game implemented in OCaml.
 
 ## Getting Started
 
